@@ -9,7 +9,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="Remotion.Linq" Version="2.1.1" />
     <PackageReference Include="System.Interactive.Async" Version="3.1.1" />
+    <PackageReference Include="System.Interactive.Async.Providers" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>

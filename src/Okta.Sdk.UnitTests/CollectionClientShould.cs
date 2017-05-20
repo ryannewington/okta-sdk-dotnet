@@ -44,7 +44,8 @@ namespace Okta.Sdk.UnitTests
             var collection = new CollectionClient<User>(
                 dataStore, "http://mock-collection.dev", null);
 
-            var activeUsers = await collection.Where(x => x.Status == "ACTIVE").ToList();
+            var activeUsersQuery = collection.Where(x => x.Status == "ACTIVE");
+            var activeUsers = await activeUsersQuery.ToList();
             activeUsers.Count.Should().Be(2);
         }
     }
