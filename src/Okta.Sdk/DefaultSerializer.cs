@@ -2,7 +2,6 @@
 using Okta.Sdk.Abstractions;
 using System.Collections.Generic;
 using System.IO;
-using System;
 
 namespace Okta.Sdk
 {
@@ -25,7 +24,12 @@ namespace Okta.Sdk
 
         public string Serialize(object model)
         {
-            throw new NotImplementedException();
+            using (var writer = new StringWriter())
+            {
+                _serializer.Serialize(writer, model);
+                writer.Flush();
+                return writer.ToString();
+            }
         }
 
         private T Deserialize<T>(string input)

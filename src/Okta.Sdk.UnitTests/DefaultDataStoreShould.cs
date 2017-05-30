@@ -88,11 +88,14 @@ namespace Okta.Sdk.UnitTests
         public async Task DelegatePostToRequestExecutor()
         {
             var mockRequestExecutor = Substitute.For<IRequestExecutor>();
+            mockRequestExecutor
+                .PostAsync("dev://foo.local", "{}", CancellationToken.None)
+                .Returns(new HttpResponse<string>() { StatusCode = 200 });
             var dataStore = new DefaultDataStore(mockRequestExecutor, new DefaultSerializer());
 
-            await dataStore.PostAsync<TestResource>("dev://foo.local", "data", CancellationToken.None);
+            await dataStore.PostAsync<TestResource>("dev://foo.local", new { }, CancellationToken.None);
 
-            await mockRequestExecutor.Received().PostAsync("dev://foo.local", "data", CancellationToken.None);
+            await mockRequestExecutor.Received().PostAsync("dev://foo.local", "{}", CancellationToken.None);
         }
     }
 }

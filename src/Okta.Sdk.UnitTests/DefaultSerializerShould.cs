@@ -60,5 +60,15 @@ namespace Okta.Sdk.UnitTests
 
             dict.Count.Should().Be(0);
         }
+
+        [Fact]
+        public void SerializeObject()
+        {
+            var serializer = new DefaultSerializer();
+
+            var json = serializer.Serialize(new { foo = "bar" });
+
+            json.Should().Be("{\"foo\":\"bar\"}");
+        }
     }
 }

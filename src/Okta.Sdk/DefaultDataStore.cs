@@ -73,8 +73,9 @@ namespace Okta.Sdk
             // TODO apply query string parameters
 
             var response = await _requestExecutor.PostAsync(href, body, cancellationToken);
+            if (response == null) throw new InvalidOperationException("The response from the RequestExecutor was null.");
 
-            var returnedDictionary = _serializer.Deserialize(response.Payload);
+            var returnedDictionary = _serializer.Deserialize(response.Payload ?? string.Empty);
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(returnedDictionary, StringComparer.OrdinalIgnoreCase);
             var returnedResource = _resourceFactory.Create<TResponse>(changeTrackingDictionary);
 
