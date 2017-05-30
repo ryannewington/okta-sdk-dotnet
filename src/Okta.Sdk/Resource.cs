@@ -64,7 +64,8 @@ namespace Okta.Sdk
 
         public IList<T> GetListProperty<T>(string key)
         {
-            throw new NotImplementedException();
+            var nestedList = GetProperty(key) as IChangeTrackingList<T>;
+            return nestedList ?? new ChangeTrackingList<T>();
         }
 
         public T GetProperty<T>(string key)
