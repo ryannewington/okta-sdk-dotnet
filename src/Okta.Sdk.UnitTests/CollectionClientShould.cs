@@ -10,11 +10,11 @@ namespace Okta.Sdk.UnitTests
     {
         private static readonly List<User> TestUsers = new List<User>()
         {
-            new User { Id = "123", Status = "ACTIVE" },
-            new User { Id = "456", Status = "DISABLED" },
-            new User { Id = "abc", Status = "ACTIVE" },
-            new User { Id = "xyz", Status = "UNKNOWN" },
-            new User { Id = "999", Status = "UNKNOWN" },
+            new ResourceCreator<User>().With((u => u.Id, "123"), (u => u.Status, "ACTIVE")),
+            new ResourceCreator<User>().With((u => u.Id, "456"), (u => u.Status, "DISABLED")),
+            new ResourceCreator<User>().With((u => u.Id, "abc"), (u => u.Status, "ACTIVE")),
+            new ResourceCreator<User>().With((u => u.Id, "xyz"), (u => u.Status, "UNKNOWN")),
+            new ResourceCreator<User>().With((u => u.Id, "999"), (u => u.Status, "UNKNOWN")),
         };
 
         [Fact]

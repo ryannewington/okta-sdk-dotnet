@@ -20,15 +20,16 @@ namespace Okta.Sdk
             _data = data ?? _resourceFactory.NewDictionary();
         }
 
-        public IDictionary<string, object> GetModifiedData()
-            => (IDictionary<string, object>)_data.Difference;
+        public IChangeTrackingDictionary<string, object> GetData() => _data;
+
+        public IDictionary<string, object> GetModifiedData() => (IDictionary<string, object>)_data.Difference;
 
         public void SetProperty(string key, object value)
             => _data[key] = value;
 
         public void SetResourceProperty<T>(string key, T value)
-            where T : Resource
-            => SetProperty(key, value?._data);
+            where T : IResource
+            => SetProperty(key, value?.GetData());
 
         public object GetProperty(string key)
         {

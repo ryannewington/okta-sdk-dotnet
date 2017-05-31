@@ -10,5 +10,7 @@ namespace Okta.Sdk.Abstractions
         void Initialize(IChangeTrackingDictionary<string, object> data);
 
         IDictionary<string, object> GetModifiedData();
+
+        IChangeTrackingDictionary<string, object> GetData();
     }
 }

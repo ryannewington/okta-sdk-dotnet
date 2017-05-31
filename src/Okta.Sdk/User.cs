@@ -8,22 +8,35 @@ namespace Okta.Sdk
     {
         private readonly Resource _resource = new Resource();
 
-        IDictionary<string, object> IResource.GetModifiedData()
-            => _resource.GetModifiedData();
+        IChangeTrackingDictionary<string, object> IResource.GetData() =>
+            _resource.GetData();
 
-        void IResource.Initialize(IChangeTrackingDictionary<string, object> data)
+        IDictionary<string, object> IResource.GetModifiedData() =>
+            _resource.GetModifiedData();
+
+        void IResource.Initialize(IChangeTrackingDictionary<string, object> data) 
             => _resource.Initialize(data);
 
-        public string Id
-        {
-            get => _resource.GetStringProperty(nameof(Id));
-            set => _resource.SetProperty(nameof(Id), value);
-        }
+        public string Id => _resource.GetStringProperty(nameof(Id));
 
-        public string Status
+        public string Status => _resource.GetStringProperty(nameof(Status));
+
+        public DateTimeOffset? Created => _resource.GetDateTimeProperty(nameof(Created));
+
+        public DateTimeOffset? Activated => _resource.GetDateTimeProperty(nameof(Activated));
+
+        public DateTimeOffset? StatusChanged => _resource.GetDateTimeProperty(nameof(StatusChanged));
+
+        public DateTimeOffset? LastLogin => _resource.GetDateTimeProperty(nameof(LastLogin));
+
+        public DateTimeOffset? LastUpdated => _resource.GetDateTimeProperty(nameof(LastUpdated));
+
+        public DateTimeOffset? PasswordChanged => _resource.GetDateTimeProperty(nameof(PasswordChanged));
+
+        public UserProfile Profile
         {
-            get => _resource.GetStringProperty(nameof(Status));
-            set => _resource.SetProperty(nameof(Status), value);
+            get => _resource.GetProperty<UserProfile>(nameof(Profile));
+            set => _resource.SetResourceProperty(nameof(Profile), value);
         }
     }
 }
