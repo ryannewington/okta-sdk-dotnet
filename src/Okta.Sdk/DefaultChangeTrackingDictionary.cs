@@ -1,8 +1,8 @@
-﻿using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
@@ -32,7 +32,10 @@ namespace Okta.Sdk
         {
             if (parent != null)
             {
-                if (string.IsNullOrEmpty(parentKey)) throw new ArgumentNullException(nameof(parent), $"Both {nameof(parent)} and {nameof(parentKey)} must be specified.");
+                if (string.IsNullOrEmpty(parentKey))
+                {
+                    throw new ArgumentNullException(nameof(parent), $"Both {nameof(parent)} and {nameof(parentKey)} must be specified.");
+                }
 
                 _parent = parent;
                 _parentKey = parentKey;
@@ -49,7 +52,10 @@ namespace Okta.Sdk
 
         private Dictionary<string, object> DeepCopy(IEnumerable<KeyValuePair<string, object>> original)
         {
-            if (original == null) return new Dictionary<string, object>(_keyComparer);
+            if (original == null)
+            {
+                return new Dictionary<string, object>(_keyComparer);
+            }
 
             return original.Select(kvp =>
             {
@@ -65,7 +71,11 @@ namespace Okta.Sdk
 
         public void MarkDirty(string key)
         {
-            if (!_dirtyKeys.Contains(key)) _dirtyKeys.Add(key);
+            if (!_dirtyKeys.Contains(key))
+            {
+                _dirtyKeys.Add(key);
+            }
+
             _parent?.MarkDirty(_parentKey);
         }
 
@@ -84,7 +94,7 @@ namespace Okta.Sdk
         public object Difference
             => _data
                 .Where(kvp => _dirtyKeys.Contains(kvp.Key, _keyComparer))
-                .Select(kvp => (kvp.Value is IChangeTrackingDictionary<string, object> nested) 
+                .Select(kvp => kvp.Value is IChangeTrackingDictionary<string, object> nested
                     ? new KeyValuePair<string, object>(kvp.Key, nested.Difference)
                     : kvp)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, _keyComparer);

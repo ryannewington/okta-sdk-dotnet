@@ -1,7 +1,7 @@
-﻿using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {

@@ -8,13 +8,20 @@ namespace Okta.Sdk.Abstractions
     {
         public static IEnumerable<WebLink> Parse(params string[] headerValues)
         {
-            if (headerValues == null || headerValues.Length == 0) yield break;
+            if (headerValues == null || headerValues.Length == 0)
+            {
+                yield break;
+            }
 
             var values = headerValues
                 .Where(x => !string.IsNullOrEmpty(x))
                 .SelectMany(x =>
             {
-                if (!x.Contains(",")) return new[] { x };
+                if (!x.Contains(","))
+                {
+                    return new[] { x };
+                }
+
                 return x.Split(',');
             })
             .Select(x => x.Trim())
@@ -28,11 +35,17 @@ namespace Okta.Sdk.Abstractions
                     .Where(x => !string.IsNullOrEmpty(x))
                     .ToArray();
 
-                if (segments.Length < 2) continue;
+                if (segments.Length < 2)
+                {
+                    continue;
+                }
 
                 var targetToken = segments[0];
                 var validTarget = targetToken.StartsWith("<") && targetToken.EndsWith(">");
-                if (!validTarget) continue;
+                if (!validTarget)
+                {
+                    continue;
+                }
 
                 var target = targetToken.TrimStart('<').TrimEnd('>');
 

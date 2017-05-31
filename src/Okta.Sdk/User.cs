@@ -14,7 +14,7 @@ namespace Okta.Sdk
         IDictionary<string, object> IResource.GetModifiedData() =>
             _resource.GetModifiedData();
 
-        void IResource.Initialize(IChangeTrackingDictionary<string, object> data) 
+        void IResource.Initialize(IChangeTrackingDictionary<string, object> data)
             => _resource.Initialize(data);
 
         public string Id => _resource.GetStringProperty(nameof(Id));

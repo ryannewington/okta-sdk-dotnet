@@ -1,6 +1,6 @@
-﻿using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
@@ -43,28 +43,44 @@ namespace Okta.Sdk
         public bool? GetBooleanProperty(string key)
         {
             var raw = GetStringProperty(key);
-            if (raw == null) return null;
+            if (raw == null)
+            {
+                return null;
+            }
+
             return bool.Parse(raw);
         }
 
         public int? GetIntProperty(string key)
         {
             var raw = GetStringProperty(key);
-            if (raw == null) return null;
+            if (raw == null)
+            {
+                return null;
+            }
+
             return int.Parse(raw);
         }
 
         public long? GetLongProperty(string key)
         {
             var raw = GetStringProperty(key);
-            if (raw == null) return null;
+            if (raw == null)
+            {
+                return null;
+            }
+
             return long.Parse(raw);
         }
 
         public DateTimeOffset? GetDateTimeProperty(string key)
         {
             var raw = GetStringProperty(key);
-            if (raw == null) return null;
+            if (raw == null)
+            {
+                return null;
+            }
+
             return DateTimeOffset.Parse(raw);
         }
 

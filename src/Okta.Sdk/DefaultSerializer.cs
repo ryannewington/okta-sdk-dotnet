@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using Okta.Sdk.Abstractions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {

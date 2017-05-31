@@ -1,9 +1,9 @@
-﻿using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
@@ -27,6 +27,7 @@ namespace Okta.Sdk
         {
             _dataStore = dataStore ?? throw new ArgumentNullException(nameof(dataStore));
             _nextUri = uri ?? throw new ArgumentNullException(nameof(uri));
+
             // TODO - currently this enumerator won't pass query string values to the nextUri automatically
             _initialQueryParameters = queryParameters?.ToArray() ?? new KeyValuePair<string, object>[0];
         }
@@ -38,9 +39,15 @@ namespace Okta.Sdk
 #pragma warning restore UseAsyncSuffix // Must match interface
         {
             var hasMoreLocalItems = _initialized && _currentPage.Length != 0 && _currentPageIndex < _currentPage.Length;
-            if (hasMoreLocalItems) return true;
+            if (hasMoreLocalItems)
+            {
+                return true;
+            }
 
-            if (string.IsNullOrEmpty(_nextUri)) return false;
+            if (string.IsNullOrEmpty(_nextUri))
+            {
+                return false;
+            }
 
             var nextPage = await _dataStore.GetArrayAsync<T>(_nextUri, cancellationToken).ConfigureAwait(false);
 
@@ -68,17 +75,14 @@ namespace Okta.Sdk
                 .Target;
         }
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    // TODO: dispose DataStore?
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
 
                 _disposedValue = true;
             }

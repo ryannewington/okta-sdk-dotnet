@@ -1,7 +1,7 @@
-﻿using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {

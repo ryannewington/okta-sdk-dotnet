@@ -8,11 +8,13 @@ namespace Okta.Sdk.Abstractions
         {
         }
 
-        public OktaException(string message) : base(message)
+        public OktaException(string message)
+            : base(message)
         {
         }
 
-        public OktaException(string message, Exception innerException) : base(message, innerException)
+        public OktaException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
     }

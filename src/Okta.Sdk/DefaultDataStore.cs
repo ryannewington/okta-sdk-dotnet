@@ -1,9 +1,9 @@
-﻿using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
@@ -32,7 +32,10 @@ namespace Okta.Sdk
             // todo optional query string parameters
 
             var response = await _requestExecutor.GetAsync(href, cancellationToken).ConfigureAwait(false);
-            if (response == null) throw new InvalidOperationException("The response from the RequestExecutor was null.");
+            if (response == null)
+            {
+                throw new InvalidOperationException("The response from the RequestExecutor was null.");
+            }
 
             var resources = _serializer
                 .DeserializeArray(response.Payload ?? string.Empty)
@@ -42,7 +45,7 @@ namespace Okta.Sdk
             {
                 StatusCode = response.StatusCode,
                 Headers = response.Headers,
-                Payload = resources
+                Payload = resources,
             };
         }
 
@@ -52,12 +55,18 @@ namespace Okta.Sdk
             // todo optional query string parameters
 
             var response = await _requestExecutor.GetAsync(href, cancellationToken).ConfigureAwait(false);
-            if (response == null) throw new InvalidOperationException("The response from the RequestExecutor was null.");
+            if (response == null)
+            {
+                throw new InvalidOperationException("The response from the RequestExecutor was null.");
+            }
 
             var dictionary = _serializer.Deserialize(response.Payload ?? string.Empty);
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(dictionary, StringComparer.OrdinalIgnoreCase);
 
-            if (response.StatusCode != 200) throw new OktaApiException(response.StatusCode, _resourceFactory.Create<Resource>(changeTrackingDictionary));
+            if (response.StatusCode != 200)
+            {
+                throw new OktaApiException(response.StatusCode, _resourceFactory.Create<Resource>(changeTrackingDictionary));
+            }
 
             var resource = _resourceFactory.Create<T>(changeTrackingDictionary);
 
@@ -65,7 +74,7 @@ namespace Okta.Sdk
             {
                 StatusCode = response.StatusCode,
                 Headers = response.Headers,
-                Payload = resource
+                Payload = resource,
             };
         }
 
@@ -76,12 +85,18 @@ namespace Okta.Sdk
             // TODO apply query string parameters
 
             var response = await _requestExecutor.PostAsync(href, body, cancellationToken).ConfigureAwait(false);
-            if (response == null) throw new InvalidOperationException("The response from the RequestExecutor was null.");
+            if (response == null)
+            {
+                throw new InvalidOperationException("The response from the RequestExecutor was null.");
+            }
 
             var returnedDictionary = _serializer.Deserialize(response.Payload ?? string.Empty);
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(returnedDictionary, StringComparer.OrdinalIgnoreCase);
 
-            if (response.StatusCode != 200) throw new OktaApiException(response.StatusCode, _resourceFactory.Create<Resource>(changeTrackingDictionary));
+            if (response.StatusCode != 200)
+            {
+                throw new OktaApiException(response.StatusCode, _resourceFactory.Create<Resource>(changeTrackingDictionary));
+            }
 
             var returnedResource = _resourceFactory.Create<TResponse>(changeTrackingDictionary);
 
@@ -89,7 +104,7 @@ namespace Okta.Sdk
             {
                 StatusCode = response.StatusCode,
                 Headers = response.Headers,
-                Payload = returnedResource
+                Payload = returnedResource,
             };
         }
     }

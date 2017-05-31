@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Extensions.Logging;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
@@ -20,7 +20,10 @@ namespace Okta.Sdk
 
         public DefaultRequestExecutor(string orgUrl, string token, ILogger logger)
         {
-            if (string.IsNullOrEmpty(token)) throw new ArgumentNullException(nameof(token));
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
 
             _orgUrl = EnsureCorrectOrgUrl(orgUrl);
             _defaultUserAgent = CreateUserAgent();
@@ -30,7 +33,10 @@ namespace Okta.Sdk
 
         private static string EnsureCorrectOrgUrl(string orgUrl)
         {
-            if (string.IsNullOrEmpty(orgUrl)) throw new ArgumentNullException(nameof(orgUrl));
+            if (string.IsNullOrEmpty(orgUrl))
+            {
+                throw new ArgumentNullException(nameof(orgUrl));
+            }
 
             if (!orgUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
@@ -53,12 +59,12 @@ namespace Okta.Sdk
         {
             var handler = new HttpClientHandler
             {
-                AllowAutoRedirect = false
+                AllowAutoRedirect = false,
             };
 
             var client = new HttpClient(handler, true)
             {
-                BaseAddress = new Uri(orgBaseUrl, UriKind.Absolute)
+                BaseAddress = new Uri(orgBaseUrl, UriKind.Absolute),
             };
 
             client.DefaultRequestHeaders.Add("User-Agent", userAgent);
@@ -121,7 +127,7 @@ namespace Okta.Sdk
                 {
                     Headers = ExtractHeaders(response),
                     StatusCode = (int)response.StatusCode,
-                    Payload = stringContent
+                    Payload = stringContent,
                 };
             }
         }

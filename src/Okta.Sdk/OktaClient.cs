@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
@@ -39,8 +39,8 @@ namespace Okta.Sdk
 
             _logger = logger ?? NullLogger.Instance;
 
+            // TODO pass proxy, connectionTimeout, etc
             DataStore = new DefaultDataStore(
-                // TODO pass proxy, connectionTimeout, etc
                 new DefaultRequestExecutor(apiClientConfiguration.OrgUrl, apiClientConfiguration.Token, _logger),
                 new DefaultSerializer());
         }

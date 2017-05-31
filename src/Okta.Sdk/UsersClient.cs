@@ -24,7 +24,5 @@ namespace Okta.Sdk
         {
             throw new NotImplementedException();
         }
-
-
     }
 }

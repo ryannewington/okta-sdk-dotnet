@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Okta.Sdk
 {
@@ -23,11 +23,13 @@ namespace Okta.Sdk
         {
             // Deserialize nested objects as dictionaries
             var isObject = reader.TokenType == JsonToken.StartObject || reader.TokenType == JsonToken.Null;
-            if (isObject) return base.ReadJson(reader, objectType, existingValue, serializer);
+            if (isObject)
+            {
+                return base.ReadJson(reader, objectType, existingValue, serializer);
+            }
 
             // If not, fall back to standard deserialization (for numbers, etc)
             return serializer.Deserialize(reader);
         }
     }
-
 }
