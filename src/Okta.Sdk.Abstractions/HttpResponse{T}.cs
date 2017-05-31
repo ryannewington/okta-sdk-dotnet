@@ -6,7 +6,7 @@ namespace Okta.Sdk.Abstractions
     {
         public int StatusCode { get; set; }
 
-        public IEnumerable<KeyValuePair<string, string>> Headers { get; set; }
+        public IEnumerable<KeyValuePair<string, IEnumerable<string>>> Headers { get; set; }
     }
 
     public class HttpResponse<T> : HttpResponse

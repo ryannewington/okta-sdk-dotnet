@@ -60,7 +60,7 @@ namespace Okta.Sdk
                 .Select(kvp => kvp.Value);
 
             _nextUri = LinkHeaderParser
-                .Parse(linkHeaders)
+                .Parse(linkHeaders.SelectMany(x => x))
                 .Where(x => x.Relation == "next")
                 .SingleOrDefault()
                 .Target;

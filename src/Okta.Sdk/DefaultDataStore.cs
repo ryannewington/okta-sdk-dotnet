@@ -56,6 +56,9 @@ namespace Okta.Sdk
 
             var dictionary = _serializer.Deserialize(response.Payload ?? string.Empty);
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(dictionary, StringComparer.OrdinalIgnoreCase);
+
+            if (response.StatusCode != 200) throw new OktaApiException(response.StatusCode, _resourceFactory.Create<Resource>(changeTrackingDictionary));
+
             var resource = _resourceFactory.Create<T>(changeTrackingDictionary);
 
             return new HttpResponse<T>
@@ -77,6 +80,9 @@ namespace Okta.Sdk
 
             var returnedDictionary = _serializer.Deserialize(response.Payload ?? string.Empty);
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(returnedDictionary, StringComparer.OrdinalIgnoreCase);
+
+            if (response.StatusCode != 200) throw new OktaApiException(response.StatusCode, _resourceFactory.Create<Resource>(changeTrackingDictionary));
+
             var returnedResource = _resourceFactory.Create<TResponse>(changeTrackingDictionary);
 
             return new HttpResponse<TResponse>

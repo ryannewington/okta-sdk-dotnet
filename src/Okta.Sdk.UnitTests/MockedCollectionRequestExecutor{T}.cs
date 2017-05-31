@@ -37,14 +37,14 @@ namespace Okta.Sdk.UnitTests
 
         public async Task<HttpResponse<string>> GetAsync(string href, CancellationToken cancellationToken)
         {
-            var headers = new List<KeyValuePair<string, string>>
+            var headers = new List<KeyValuePair<string, IEnumerable<string>>>
             {
-                new KeyValuePair<string, string>("Link", $"<{BaseUrl}?page={_currentPage}>; rel=\"self\""),
+                new KeyValuePair<string, IEnumerable<string>>("Link", new[] { $"<{BaseUrl}?page={_currentPage}>; rel=\"self\"" }),
             };
 
             if ((_currentPage + 1) * _pageSize < _items.Length)
             {
-                headers.Add(new KeyValuePair<string, string>("Link", $"<{BaseUrl}?page={_currentPage + 1}>; rel=\"next\""));
+                headers.Add(new KeyValuePair<string, IEnumerable<string>>("Link", new[] { $"<{BaseUrl}?page={_currentPage + 1}>; rel=\"next\"" }));
             }
 
             return new HttpResponse<string>

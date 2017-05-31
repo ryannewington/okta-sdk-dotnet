@@ -1,4 +1,6 @@
-﻿using Okta.Sdk.Abstractions;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Okta.Sdk.Abstractions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +9,42 @@ namespace Okta.Sdk
 {
     public partial class OktaClient : IOktaClient
     {
+        private readonly ILogger _logger;
+
+        public OktaClient(ApiClientConfiguration apiClientConfiguration = null, ILogger logger = null)
+        {
+            // TODO: flexible configuration
+
+            //string configurationFileRoot = null; // TODO find the application root directory at runtime?
+
+            //var homeOktaJsonLocation = HomePath.Resolve("~", ".okta", "okta.json");
+            //var homeOktaYamlLocation = HomePath.Resolve("~", ".okta", "okta.yaml");
+
+            //var applicationAppSettingsLocation = Path.Combine(configurationFileRoot ?? string.Empty, "appsettings.json");
+            //var applicationOktaJsonLocation = Path.Combine(configurationFileRoot ?? string.Empty, "okta.json");
+            //var applicationOktaYamlLocation = Path.Combine(configurationFileRoot ?? string.Empty, "okta.yaml");
+
+            //var configBuilder = new ConfigurationBuilder()
+            //    .AddYamlFile(homeOktaYamlLocation, optional: true, root: "okta")
+            //    .AddJsonFile(homeOktaJsonLocation, optional: true, root: "okta")
+            //    .AddJsonFile(applicationAppSettingsLocation, optional: true)
+            //    .AddYamlFile(applicationOktaYamlLocation, optional: true, root: "okta")
+            //    .AddJsonFile(applicationOktaJsonLocation, optional: true, root: "okta")
+            //    .AddEnvironmentVariables("okta", "_", root: "okta")
+            //    .AddObject(apiClientConfiguration, root: "okta");
+
+            //var config = configBuilder.Build();
+
+            // TODO: for now, just doing dumb configuration
+
+            _logger = logger ?? NullLogger.Instance;
+
+            DataStore = new DefaultDataStore(
+                // TODO pass proxy, connectionTimeout, etc
+                new DefaultRequestExecutor(apiClientConfiguration.OrgUrl, apiClientConfiguration.Token, _logger),
+                new DefaultSerializer());
+        }
+
         public OktaClient(IDataStore dataStore)
         {
             DataStore = dataStore ?? throw new ArgumentNullException(nameof(dataStore));
