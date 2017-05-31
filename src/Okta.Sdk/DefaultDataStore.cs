@@ -31,7 +31,7 @@ namespace Okta.Sdk
         {
             // todo optional query string parameters
 
-            var response = await _requestExecutor.GetAsync(href, cancellationToken);
+            var response = await _requestExecutor.GetAsync(href, cancellationToken).ConfigureAwait(false);
             if (response == null) throw new InvalidOperationException("The response from the RequestExecutor was null.");
 
             var resources = _serializer
@@ -51,7 +51,7 @@ namespace Okta.Sdk
         {
             // todo optional query string parameters
 
-            var response = await _requestExecutor.GetAsync(href, cancellationToken);
+            var response = await _requestExecutor.GetAsync(href, cancellationToken).ConfigureAwait(false);
             if (response == null) throw new InvalidOperationException("The response from the RequestExecutor was null.");
 
             var dictionary = _serializer.Deserialize(response.Payload ?? string.Empty);
@@ -75,7 +75,7 @@ namespace Okta.Sdk
             var body = _serializer.Serialize(postData);
             // TODO apply query string parameters
 
-            var response = await _requestExecutor.PostAsync(href, body, cancellationToken);
+            var response = await _requestExecutor.PostAsync(href, body, cancellationToken).ConfigureAwait(false);
             if (response == null) throw new InvalidOperationException("The response from the RequestExecutor was null.");
 
             var returnedDictionary = _serializer.Deserialize(response.Payload ?? string.Empty);

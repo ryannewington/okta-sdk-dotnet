@@ -57,7 +57,7 @@ namespace Okta.Sdk
         public async Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))
             where T : IResource, new()
         {
-            var response = await DataStore.GetAsync<T>(href, cancellationToken);
+            var response = await DataStore.GetAsync<T>(href, cancellationToken).ConfigureAwait(false);
             return response.Payload;
         }
 
@@ -67,7 +67,7 @@ namespace Okta.Sdk
             CancellationToken cancellationToken = default(CancellationToken))
             where TResponse : IResource, new()
         {
-            var response = await DataStore.PostAsync<TResponse>(href, model, cancellationToken);
+            var response = await DataStore.PostAsync<TResponse>(href, model, cancellationToken).ConfigureAwait(false);
             return response.Payload;
         }
     }

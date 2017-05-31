@@ -17,4 +17,11 @@
     <ProjectReference Include="..\Okta.Sdk.Abstractions\Okta.Sdk.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>OktaSdk.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
 </Project>

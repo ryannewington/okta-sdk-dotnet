@@ -33,14 +33,16 @@ namespace Okta.Sdk
 
         public T Current => _currentPage[_currentPageIndex++];
 
+#pragma warning disable UseAsyncSuffix // Must match interface
         public async Task<bool> MoveNext(CancellationToken cancellationToken)
+#pragma warning restore UseAsyncSuffix // Must match interface
         {
             var hasMoreLocalItems = _initialized && _currentPage.Length != 0 && _currentPageIndex < _currentPage.Length;
             if (hasMoreLocalItems) return true;
 
             if (string.IsNullOrEmpty(_nextUri)) return false;
 
-            var nextPage = await _dataStore.GetArrayAsync<T>(_nextUri, cancellationToken);
+            var nextPage = await _dataStore.GetArrayAsync<T>(_nextUri, cancellationToken).ConfigureAwait(false);
 
             _initialized = true;
 
