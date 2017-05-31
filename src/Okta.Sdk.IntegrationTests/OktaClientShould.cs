@@ -103,6 +103,9 @@ namespace Okta.Sdk.IntegrationTests
             var user = await client.GetAsync<User>("https://dev-341607.oktapreview.com/api/v1/users/00u9o1nikjvOBg5Zo0h7");
 
             user.Id.Should().Be("00u9o1nikjvOBg5Zo0h7");
+            user.Created.Value.Year.Should().Be(2017);
+            user.Profile.LastName.Should().Be("Barbettini");
+            user.Profile.FirstName.Should().Be("Nathanael");
         }
     }
 }
