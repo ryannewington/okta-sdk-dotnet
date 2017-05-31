@@ -1,7 +1,7 @@
-﻿using FluentAssertions;
-using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
+using Okta.Sdk.Abstractions;
 using Xunit;
 
 namespace Okta.Sdk.UnitTests
@@ -25,8 +25,8 @@ namespace Okta.Sdk.UnitTests
                 ["nested"] = new Dictionary<string, object>()
                 {
                     ["foo"] = "nested is neet!",
-                    ["Bar"] = false
-                }
+                    ["Bar"] = false,
+                },
             };
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
 
@@ -52,8 +52,8 @@ namespace Okta.Sdk.UnitTests
                 ["nested"] = new Dictionary<string, object>()
                 {
                     ["foo"] = "nested is neet!",
-                    ["Bar"] = false
-                }
+                    ["Bar"] = false,
+                },
             };
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new TestNestedResource();
@@ -72,8 +72,8 @@ namespace Okta.Sdk.UnitTests
             {
                 Nested = new TestNestedResource()
                 {
-                    Foo = "turtles all the way down?"
-                }
+                    Foo = "turtles all the way down?",
+                },
             };
 
             resource.GetModifiedData().Keys.Should().BeEquivalentTo("nested");

@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
 using Xunit;
 
 namespace Okta.Sdk.UnitTests
@@ -20,7 +20,7 @@ namespace Okta.Sdk.UnitTests
         {
             var caseSensitiveDictionary = new DefaultChangeTrackingDictionary(keyComparer: StringComparer.Ordinal)
             {
-                ["foo"] = 123
+                ["foo"] = 123,
             };
 
             caseSensitiveDictionary.ContainsKey("foo").Should().BeTrue();
@@ -28,7 +28,7 @@ namespace Okta.Sdk.UnitTests
 
             var caseInsensitiveDictionary = new DefaultChangeTrackingDictionary(keyComparer: StringComparer.OrdinalIgnoreCase)
             {
-                ["foo"] = 123
+                ["foo"] = 123,
             };
 
             caseInsensitiveDictionary.ContainsKey("foo").Should().BeTrue();
@@ -40,7 +40,7 @@ namespace Okta.Sdk.UnitTests
         {
             var initialData = new Dictionary<string, object>(StringComparer.Ordinal)
             {
-                ["foo"] = 123
+                ["foo"] = 123,
             };
             initialData.ContainsKey("Foo").Should().BeFalse();
 
@@ -56,7 +56,7 @@ namespace Okta.Sdk.UnitTests
         {
             var initialData = new Dictionary<string, object>()
             {
-                ["foo"] = "bar"
+                ["foo"] = "bar",
             };
             var dictionary = new DefaultChangeTrackingDictionary(initialData, StringComparer.OrdinalIgnoreCase);
 
@@ -86,12 +86,12 @@ namespace Okta.Sdk.UnitTests
             var initialData = new Dictionary<string, object>()
             {
                 ["foo"] = "a",
-                ["bar"] = "b"
+                ["bar"] = "b",
             };
             var dictionary = new DefaultChangeTrackingDictionary(initialData, StringComparer.OrdinalIgnoreCase)
             {
                 ["foo"] = "c",
-                ["baz"] = "d"
+                ["baz"] = "d",
             };
 
             dictionary.ContainsKey("foo").Should().Be(true);
@@ -111,12 +111,12 @@ namespace Okta.Sdk.UnitTests
             var initialData = new Dictionary<string, object>()
             {
                 ["foo"] = "a",
-                ["bar"] = "b"
+                ["bar"] = "b",
             };
             var dictionary = new DefaultChangeTrackingDictionary(initialData, StringComparer.OrdinalIgnoreCase)
             {
                 ["foo"] = "c",
-                ["baz"] = "d"
+                ["baz"] = "d",
             };
 
             (dictionary.Difference as IDictionary<string, object>).Count.Should().Be(2);
@@ -133,13 +133,14 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void ResetNestedDictionariesToInitialState()
         {
-            var dictionary = new DefaultChangeTrackingDictionary(new Dictionary<string, object>()
+            var dictionary = new DefaultChangeTrackingDictionary(
+                new Dictionary<string, object>()
             {
                 ["foo"] = 123,
                 ["bar"] = new Dictionary<string, object>()
                 {
-                    ["nested"] = "works"
-                }
+                    ["nested"] = "works",
+                },
             }, StringComparer.OrdinalIgnoreCase);
 
             (dictionary.Difference as IDictionary<string, object>).Count.Should().Be(0);
@@ -158,13 +159,14 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void TrackChangesToGraph()
         {
-            var dictionary = new DefaultChangeTrackingDictionary(new Dictionary<string, object>()
+            var dictionary = new DefaultChangeTrackingDictionary(
+                new Dictionary<string, object>()
             {
                 ["foo"] = 123,
                 ["bar"] = new Dictionary<string, object>()
                 {
-                    ["nested"] = "works"
-                }
+                    ["nested"] = "works",
+                },
             }, StringComparer.OrdinalIgnoreCase);
 
             (dictionary.Difference as IDictionary<string, object>).Count.Should().Be(0);
@@ -180,13 +182,14 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void ResetToGraph()
         {
-            var dictionary = new DefaultChangeTrackingDictionary(new Dictionary<string, object>()
+            var dictionary = new DefaultChangeTrackingDictionary(
+                new Dictionary<string, object>()
             {
                 ["foo"] = 123,
                 ["bar"] = new Dictionary<string, object>()
                 {
-                    ["nested"] = "works"
-                }
+                    ["nested"] = "works",
+                },
             }, StringComparer.OrdinalIgnoreCase);
 
             ((DefaultChangeTrackingDictionary)dictionary["bar"])["nested"] = "is magic!";
@@ -199,13 +202,14 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void MarkParentCleanWhenResettingNested()
         {
-            var dictionary = new DefaultChangeTrackingDictionary(new Dictionary<string, object>()
+            var dictionary = new DefaultChangeTrackingDictionary(
+                new Dictionary<string, object>()
             {
                 ["foo"] = 123,
                 ["bar"] = new Dictionary<string, object>()
                 {
-                    ["nested"] = "works"
-                }
+                    ["nested"] = "works",
+                },
             }, StringComparer.OrdinalIgnoreCase);
 
             ((DefaultChangeTrackingDictionary)dictionary["bar"])["nested"] = "is magic!";

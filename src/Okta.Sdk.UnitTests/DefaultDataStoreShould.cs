@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
-using NSubstitute;
-using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using NSubstitute;
+using Okta.Sdk.Abstractions;
 using Xunit;
 
 namespace Okta.Sdk.UnitTests

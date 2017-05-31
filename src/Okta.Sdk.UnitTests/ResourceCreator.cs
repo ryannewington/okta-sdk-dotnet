@@ -1,7 +1,7 @@
-﻿using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk.UnitTests
 {
@@ -40,12 +40,18 @@ namespace Okta.Sdk.UnitTests
         {
             var body = propertyLambda.Body;
 
+#pragma warning disable SA1119 // waiting for StyleCop bugfix
             if (!(body is MemberExpression member))
+#pragma warning restore SA1119 // waiting for StyleCop bugfix
+            {
                 throw new ArgumentException($"Expression '{propertyLambda}' does not refer to a property.");
+            }
 
             var propertyInfo = member.Member as PropertyInfo;
             if (propertyInfo == null)
+            {
                 throw new ArgumentException($"Expression '{propertyLambda}' refers to a field, not a property.");
+            }
 
             return propertyInfo;
         }

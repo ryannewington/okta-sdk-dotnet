@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
 using Xunit;
 
 namespace Okta.Sdk.UnitTests
@@ -31,7 +31,7 @@ namespace Okta.Sdk.UnitTests
             var data = new DefaultChangeTrackingDictionary(keyComparer: StringComparer.OrdinalIgnoreCase)
             {
                 ["Foo"] = "bar!",
-                ["bar"] = true
+                ["bar"] = true,
             };
 
             var resource = new TestResource();
@@ -48,7 +48,7 @@ namespace Okta.Sdk.UnitTests
             {
                 ["foo"] = "abc",
                 ["empty"] = string.Empty,
-                ["nothing"] = null
+                ["nothing"] = null,
             };
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
@@ -67,7 +67,7 @@ namespace Okta.Sdk.UnitTests
             {
                 ["yes"] = true,
                 ["no"] = false,
-                ["nothing"] = null
+                ["nothing"] = null,
             };
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
@@ -86,7 +86,7 @@ namespace Okta.Sdk.UnitTests
             {
                 ["min"] = int.MinValue,
                 ["max"] = int.MaxValue,
-                ["nothing"] = null
+                ["nothing"] = null,
             };
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
@@ -105,7 +105,7 @@ namespace Okta.Sdk.UnitTests
             {
                 ["min"] = long.MinValue,
                 ["max"] = long.MaxValue,
-                ["nothing"] = null
+                ["nothing"] = null,
             };
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
@@ -124,7 +124,7 @@ namespace Okta.Sdk.UnitTests
             {
                 ["dto"] = new DateTimeOffset(2015, 12, 27, 20, 15, 00, TimeSpan.FromHours(-6)),
                 ["iso"] = "2016-11-06T17:05:30.400-08:00",
-                ["nothing"] = null
+                ["nothing"] = null,
             };
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
@@ -141,7 +141,7 @@ namespace Okta.Sdk.UnitTests
         {
             var resource = new TestResource()
             {
-                Foo = "xyz"
+                Foo = "xyz",
             };
 
             resource.GetModifiedData().Keys.Should().BeEquivalentTo("foo");

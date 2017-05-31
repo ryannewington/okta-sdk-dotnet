@@ -1,7 +1,7 @@
-using FluentAssertions;
-using Okta.Sdk.Abstractions;
 using System;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Okta.Sdk.Abstractions;
 using Xunit;
 
 namespace Okta.Sdk.IntegrationTests
@@ -14,7 +14,7 @@ namespace Okta.Sdk.IntegrationTests
             return new OktaClient(new ApiClientConfiguration
             {
                 OrgUrl = "https://dev-341607.oktapreview.com",
-                Token = token ?? "00w6Z6oZSqdPX243H5XUPj0svMGbJonU20-Rjnatqe"
+                Token = token ?? "00w6Z6oZSqdPX243H5XUPj0svMGbJonU20-Rjnatqe",
             });
         }
 
@@ -28,7 +28,7 @@ namespace Okta.Sdk.IntegrationTests
                 client = new OktaClient(new ApiClientConfiguration
                 {
                     OrgUrl = null,
-                    Token = "foobar"
+                    Token = "foobar",
                 });
             });
         }
@@ -44,7 +44,7 @@ namespace Okta.Sdk.IntegrationTests
                 {
                     // Must start with https://
                     OrgUrl = "http://insecure.dev",
-                    Token = "foobar"
+                    Token = "foobar",
                 });
             });
         }
@@ -59,7 +59,7 @@ namespace Okta.Sdk.IntegrationTests
                 client = new OktaClient(new ApiClientConfiguration
                 {
                     OrgUrl = "https://dev-12345.oktapreview.com",
-                    Token = null
+                    Token = null,
                 });
             });
         }

@@ -1,9 +1,7 @@
-﻿using FluentAssertions;
-using Okta.Sdk.Abstractions;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using FluentAssertions;
+using Okta.Sdk.Abstractions;
 using Xunit;
 
 namespace Okta.Sdk.UnitTests
@@ -38,7 +36,7 @@ namespace Okta.Sdk.UnitTests
             var headerValues = new List<string>()
             {
                 "<https://my-server.dev/api/v1/users?limit=25>; rel=\"self\"",
-                "<https://my-server.dev/api/v1/users?after=asdf123&limit=25>; rel=\"next\""
+                "<https://my-server.dev/api/v1/users?after=asdf123&limit=25>; rel=\"next\"",
             };
             var links = LinkHeaderParser.Parse(headerValues);
 
@@ -87,10 +85,12 @@ namespace Okta.Sdk.UnitTests
         {
             var headerValues = new List<string>()
             {
+                #pragma warning disable SA1122
                 "",
+                #pragma warning restore SA1122
                 string.Empty,
                 null,
-                "<https://foo.bar>; rel=\"self\""
+                "<https://foo.bar>; rel=\"self\"",
             };
             var links = LinkHeaderParser.Parse(headerValues);
 
@@ -107,7 +107,7 @@ namespace Okta.Sdk.UnitTests
                 "barbaz",
                 "nope!",
                 "   ",
-                "<https://foo.bar>; rel=\"prev\""
+                "<https://foo.bar>; rel=\"prev\"",
             };
             var links = LinkHeaderParser.Parse(headerValues);
 

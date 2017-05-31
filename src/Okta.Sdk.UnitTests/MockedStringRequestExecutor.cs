@@ -1,7 +1,7 @@
-﻿using Okta.Sdk.Abstractions;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk.UnitTests
 {
@@ -21,7 +21,7 @@ namespace Okta.Sdk.UnitTests
             => new HttpResponse<string>
             {
                 StatusCode = 200,
-                Payload = await GetBodyAsync(href, cancellationToken)
+                Payload = await GetBodyAsync(href, cancellationToken),
             };
 
         public Task<HttpResponse<string>> PostAsync(string href, string body, CancellationToken cancellationToken)

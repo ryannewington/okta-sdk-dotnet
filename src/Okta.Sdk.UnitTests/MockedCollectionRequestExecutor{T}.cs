@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using Okta.Sdk.Abstractions;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System;
+using Newtonsoft.Json;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk.UnitTests
 {
@@ -51,7 +51,7 @@ namespace Okta.Sdk.UnitTests
             {
                 StatusCode = 200,
                 Headers = headers,
-                Payload = await GetBodyAsync(href, cancellationToken)
+                Payload = await GetBodyAsync(href, cancellationToken),
             };
         }
 

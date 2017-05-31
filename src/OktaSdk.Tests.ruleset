@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="New Rule Set" Description=" " ToolsVersion="10.0">
+<RuleSet Name="Okta SDK Tests" Description=" " ToolsVersion="10.0">
   <Rules AnalyzerId="AsyncUsageAnalyzers" RuleNamespace="AsyncUsageAnalyzers">
     <Rule Id="AvoidAsyncSuffix" Action="Error" />
     <Rule Id="AvoidAsyncVoid" Action="Error" />
-    <Rule Id="UseAsyncSuffix" Action="Error" />
-    <Rule Id="UseConfigureAwait" Action="Error" />
+    <Rule Id="UseAsyncSuffix" Action="None" />
+    <Rule Id="UseConfigureAwait" Action="None" />
   </Rules>
 
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
@@ -73,8 +73,11 @@
   </Rules>
 
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA0001" Action="None" />
     <Rule Id="SA1000" Action="Error" />
     <Rule Id="SA1001" Action="Error" />
+    <!-- Restore after C# 7 support is added -->
+    <Rule Id="SA1008" Action="None" />
     <Rule Id="SA1021" Action="Error" />
     <Rule Id="SA1022" Action="Error" />
     <Rule Id="SA1100" Action="Error" />
@@ -111,6 +114,7 @@
     <Rule Id="SA1503" Action="Error" />
     <Rule Id="SA1512" Action="None" />
     <Rule Id="SA1515" Action="None" />
+    <Rule Id="SA1600" Action="None" />
     <Rule Id="SA1603" Action="Error" />
     <Rule Id="SA1609" Action="Warning" />
     <Rule Id="SA1633" Action="Error" />
