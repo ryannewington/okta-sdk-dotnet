@@ -30,7 +30,8 @@ namespace Okta.Sdk.UnitTests
             };
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
 
-            var resource = new TestNestedResource(changeTrackingDictionary);
+            var resource = new TestNestedResource();
+            resource.Initialize(changeTrackingDictionary);
 
             resource.Should().NotBeNull();
             resource.Foo.Should().Be("abc");
@@ -55,7 +56,8 @@ namespace Okta.Sdk.UnitTests
                 }
             };
             var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
-            var resource = new TestNestedResource(changeTrackingDictionary);
+            var resource = new TestNestedResource();
+            resource.Initialize(changeTrackingDictionary);
             resource.GetModifiedData().Count.Should().Be(0);
 
             resource.Nested.Bar = true;

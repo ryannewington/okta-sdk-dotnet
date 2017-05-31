@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Okta.Sdk
 {
-    public partial class OktaClient
+    public partial class OktaClient : IOktaClient
     {
         public OktaClient(IDataStore dataStore)
         {
@@ -17,7 +17,7 @@ namespace Okta.Sdk
         public UsersClient GetUsersClient => new UsersClient(this);
 
         public async Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))
-            where T : Resource
+            where T : IResource, new()
         {
             var response = await DataStore.GetAsync<T>(href, cancellationToken);
             return response.Payload;
@@ -27,7 +27,7 @@ namespace Okta.Sdk
             string href,
             object model,
             CancellationToken cancellationToken = default(CancellationToken))
-            where TResponse : Resource
+            where TResponse : IResource, new()
         {
             var response = await DataStore.PostAsync<TResponse>(href, model, cancellationToken);
             return response.Payload;

@@ -4,14 +4,19 @@ using System.Collections.Generic;
 
 namespace Okta.Sdk
 {
-    public class Resource
+    public class Resource : IResource
     {
-        private readonly IChangeTrackingDictionary<string, object> _data;
         private readonly ResourceFactory _resourceFactory;
+        private IChangeTrackingDictionary<string, object> _data;
 
-        public Resource(IChangeTrackingDictionary<string, object> data)
+        public Resource()
         {
             _resourceFactory = new ResourceFactory();
+            Initialize();
+        }
+
+        public void Initialize(IChangeTrackingDictionary<string, object> data = null)
+        {
             _data = data ?? _resourceFactory.NewDictionary();
         }
 
@@ -68,7 +73,7 @@ namespace Okta.Sdk
         }
 
         public T GetProperty<T>(string key)
-            where T : Resource
+            where T : IResource, new()
         {
             var nestedData = GetProperty(key) as IChangeTrackingDictionary<string, object>;
             return _resourceFactory.Create<T>(nestedData);

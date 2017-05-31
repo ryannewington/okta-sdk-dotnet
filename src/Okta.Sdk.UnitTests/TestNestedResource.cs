@@ -1,12 +1,7 @@
-﻿using Okta.Sdk.Abstractions;
-
-namespace Okta.Sdk.UnitTests
+﻿namespace Okta.Sdk.UnitTests
 {
     public class TestNestedResource : TestResource
     {
-        public TestNestedResource() : base(null) { }
-        public TestNestedResource(IChangeTrackingDictionary<string, object> data) : base(data) { }
-
         public TestNestedResource Nested
         {
             get => GetProperty<TestNestedResource>("nested");

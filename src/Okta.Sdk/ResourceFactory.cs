@@ -11,26 +11,11 @@ namespace Okta.Sdk
             => new DefaultChangeTrackingDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
 
         public T Create<T>(IChangeTrackingDictionary<string, object> data)
-            where T : Resource
+            where T : IResource, new()
         {
-            var ctor = GetConstructor<T>();
-            var model = ctor.Invoke(new object[] { data });
-            return (T)model;
+            var model = new T();
+            model.Initialize(data);
+            return model;
         }
-
-        private static ConstructorInfo GetConstructor<T>()
-        {
-            var compatibleCtor = typeof(T).GetTypeInfo()
-                .DeclaredConstructors
-                .Where(c => c.GetParameters().Length == 1
-                         && c.GetParameters()[0].ParameterType == typeof(IChangeTrackingDictionary<string, object>))
-                .SingleOrDefault();
-
-            if (compatibleCtor == null) throw new MissingMethodException(
-                $"The resource type {typeof(T).FullName} must have a public constructor that accepts IDeltaDictionary<string, object>");
-
-            return compatibleCtor;
-        }
-
     }
 }

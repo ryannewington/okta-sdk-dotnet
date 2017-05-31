@@ -1,23 +1,29 @@
-﻿using Okta.Sdk.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
-    public sealed class User : Resource
+    public sealed class User : IResource
     {
-        public User() : base(null) { }
+        private readonly Resource _resource = new Resource();
 
-        public User(IChangeTrackingDictionary<string, object> data) : base(data) { }
+        IDictionary<string, object> IResource.GetModifiedData()
+            => _resource.GetModifiedData();
+
+        void IResource.Initialize(IChangeTrackingDictionary<string, object> data)
+            => _resource.Initialize(data);
 
         public string Id
         {
-            get => GetStringProperty(nameof(Id));
-            set => SetProperty(nameof(Id), value);
+            get => _resource.GetStringProperty(nameof(Id));
+            set => _resource.SetProperty(nameof(Id), value);
         }
 
         public string Status
         {
-            get => GetStringProperty(nameof(Status));
-            set => SetProperty(nameof(Status), value);
+            get => _resource.GetStringProperty(nameof(Status));
+            set => _resource.SetProperty(nameof(Status), value);
         }
     }
 }
