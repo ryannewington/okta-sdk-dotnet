@@ -3,19 +3,14 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
-
 namespace Okta.Sdk
 {
     public class UserProfile : Resource
     {
-        //IChangeTrackingDictionary<string, object> IResource.GetData() =>
-        //    GetData();
-
-        //IDictionary<string, object> IResource.GetModifiedData() =>
-        //    GetModifiedData();
-
-        //void IResource.Initialize(IChangeTrackingDictionary<string, object> data)
-        //    => Initialize(data);
+        public UserProfile()
+            : base(ResourceDictionaryType.ChangeTracking)
+        {
+        }
 
         public string LastName
         {

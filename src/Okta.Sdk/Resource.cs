@@ -17,7 +17,6 @@ namespace Okta.Sdk
         public Resource()
             : this(ResourceDictionaryType.Default)
         {
-
         }
 
         public Resource(ResourceDictionaryType dictionaryType)
