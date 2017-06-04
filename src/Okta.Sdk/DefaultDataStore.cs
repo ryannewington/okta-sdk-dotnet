@@ -31,30 +31,44 @@ namespace Okta.Sdk
 
         public ISerializer Serializer => _serializer;
 
-        private HttpResponse<T> HandleResponse<T>(HttpResponse<string> response)
-            where T : Resource, new()
+        private void EnsureResponseSuccess(HttpResponse<string> response)
         {
             if (response == null)
             {
                 throw new InvalidOperationException("The response from the RequestExecutor was null.");
             }
 
-            var data = _serializer.Deserialize(response.Payload ?? string.Empty);
-
             if (response.StatusCode != 200)
             {
-                throw new OktaApiException(response.StatusCode, _resourceFactory.CreateNew<Resource>(data));
+                IDictionary<string, object> errorData = null;
+
+                try
+                {
+                    errorData = _serializer.Deserialize(PayloadOrEmpty(response));
+                    if (errorData == null)
+                    {
+                        throw new Exception("The error data was null.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"An error occurred deserializing the error body for response code {response.StatusCode}. See the inner exception for details.", ex);
+                }
+
+                throw new OktaApiException(response.StatusCode, _resourceFactory.CreateNew<Resource>(errorData));
             }
+        }
 
-            var resource = _resourceFactory.CreateNew<T>(data);
-
-            return new HttpResponse<T>
+        private static HttpResponse<T> CreateResourceResponse<T>(HttpResponse<string> response, T resource)
+            => new HttpResponse<T>
             {
                 StatusCode = response.StatusCode,
                 Headers = response.Headers,
                 Payload = resource,
             };
-        }
+
+        private static string PayloadOrEmpty(HttpResponse<string> response)
+            => response?.Payload ?? string.Empty;
 
         public async Task<HttpResponse<T>> GetAsync<T>(string href, CancellationToken cancellationToken)
             where T : Resource, new()
@@ -62,30 +76,27 @@ namespace Okta.Sdk
             // todo optional query string parameters
 
             var response = await _requestExecutor.GetAsync(href, cancellationToken).ConfigureAwait(false);
-            return HandleResponse<T>(response);
+            EnsureResponseSuccess(response);
+
+            var data = _serializer.Deserialize(PayloadOrEmpty(response));
+            var resource = _resourceFactory.CreateNew<T>(data);
+
+            return CreateResourceResponse(response, resource);
         }
 
         public async Task<HttpResponse<IEnumerable<T>>> GetArrayAsync<T>(string href, CancellationToken cancellationToken)
             where T : Resource, new()
         {
-            // todo optional query string parameters
+            // TODO apply query string parameters
 
             var response = await _requestExecutor.GetAsync(href, cancellationToken).ConfigureAwait(false);
-            if (response == null)
-            {
-                throw new InvalidOperationException("The response from the RequestExecutor was null.");
-            }
+            EnsureResponseSuccess(response);
 
             var resources = _serializer
-                .DeserializeArray(response.Payload ?? string.Empty)
+                .DeserializeArray(PayloadOrEmpty(response))
                 .Select(x => _resourceFactory.CreateNew<T>(x));
 
-            return new HttpResponse<IEnumerable<T>>
-            {
-                StatusCode = response.StatusCode,
-                Headers = response.Headers,
-                Payload = resources,
-            };
+            return CreateResourceResponse(response, resources);
         }
 
         public async Task<HttpResponse<TResponse>> PostAsync<TResponse>(string href, object postData, CancellationToken cancellationToken)
@@ -95,7 +106,12 @@ namespace Okta.Sdk
             // TODO apply query string parameters
 
             var response = await _requestExecutor.PostAsync(href, body, cancellationToken).ConfigureAwait(false);
-            return HandleResponse<TResponse>(response);
+            EnsureResponseSuccess(response);
+
+            var data = _serializer.Deserialize(PayloadOrEmpty(response));
+            var resource = _resourceFactory.CreateNew<TResponse>(data);
+
+            return CreateResourceResponse(response, resource);
         }
 
         public async Task<HttpResponse<TResponse>> PutAsync<TResponse>(string href, object postData, CancellationToken cancellationToken) where TResponse : Resource, new()
@@ -104,12 +120,19 @@ namespace Okta.Sdk
             // TODO apply query string parameters
 
             var response = await _requestExecutor.PutAsync(href, body, cancellationToken).ConfigureAwait(false);
-            return HandleResponse<TResponse>(response);
+            EnsureResponseSuccess(response);
+
+            var data = _serializer.Deserialize(PayloadOrEmpty(response));
+            var resource = _resourceFactory.CreateNew<TResponse>(data);
+
+            return CreateResourceResponse(response, resource);
         }
 
         public async Task<HttpResponse> DeleteAsync(string href, CancellationToken cancellationToken)
         {
             var response = await _requestExecutor.DeleteAsync(href, cancellationToken).ConfigureAwait(false);
+            EnsureResponseSuccess(response);
+
             return response;
         }
     }
