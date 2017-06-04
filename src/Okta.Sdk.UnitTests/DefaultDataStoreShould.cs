@@ -102,5 +102,33 @@ namespace Okta.Sdk.UnitTests
 
             await mockRequestExecutor.Received().PostAsync("https://foo.dev", "{}", CancellationToken.None);
         }
+
+        [Fact]
+        public async Task DelegatePutToRequestExecutor()
+        {
+            var mockRequestExecutor = Substitute.For<IRequestExecutor>();
+            mockRequestExecutor
+                .PutAsync("https://foo.dev", "{}", CancellationToken.None)
+                .Returns(new HttpResponse<string>() { StatusCode = 200 });
+            var dataStore = new DefaultDataStore(mockRequestExecutor, new DefaultSerializer());
+
+            await dataStore.PutAsync<TestResource>("https://foo.dev", new { }, CancellationToken.None);
+
+            await mockRequestExecutor.Received().PutAsync("https://foo.dev", "{}", CancellationToken.None);
+        }
+
+        [Fact]
+        public async Task DelegateDeleteToRequestExecutor()
+        {
+            var mockRequestExecutor = Substitute.For<IRequestExecutor>();
+            mockRequestExecutor
+                .DeleteAsync("https://foo.dev", CancellationToken.None)
+                .Returns(new HttpResponse<string>() { StatusCode = 200 });
+            var dataStore = new DefaultDataStore(mockRequestExecutor, new DefaultSerializer());
+
+            await dataStore.DeleteAsync("https://foo.dev", CancellationToken.None);
+
+            await mockRequestExecutor.Received().DeleteAsync("https://foo.dev", CancellationToken.None);
+        }
     }
 }

@@ -92,26 +92,6 @@ namespace Okta.Sdk
         private string MakeUrlRelative(string url)
             => url.Replace(_orgUrl, string.Empty);
 
-        public Task<HttpResponse<string>> GetAsync(string href, CancellationToken cancellationToken)
-        {
-            EnsureRequestUrlMatchesOrg(href);
-            var path = MakeUrlRelative(href);
-
-            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(path, UriKind.Relative));
-            return SendAsync(request, cancellationToken);
-        }
-
-        public async Task<string> GetBodyAsync(string href, CancellationToken cancellationToken)
-        {
-            var response = await GetAsync(href, cancellationToken).ConfigureAwait(false);
-            return response.Payload;
-        }
-
-        public Task<HttpResponse<string>> PostAsync(string href, string body, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
         private async Task<HttpResponse<string>> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken)
@@ -139,5 +119,49 @@ namespace Okta.Sdk
 
         private IEnumerable<KeyValuePair<string, IEnumerable<string>>> ExtractHeaders(HttpResponseMessage response)
             => response.Headers.Concat(response.Content.Headers);
+
+        public Task<HttpResponse<string>> GetAsync(string href, CancellationToken cancellationToken)
+        {
+            EnsureRequestUrlMatchesOrg(href);
+            var path = MakeUrlRelative(href);
+
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(path, UriKind.Relative));
+            return SendAsync(request, cancellationToken);
+        }
+
+        public async Task<string> GetBodyAsync(string href, CancellationToken cancellationToken)
+        {
+            var response = await GetAsync(href, cancellationToken).ConfigureAwait(false);
+            return response.Payload;
+        }
+
+        public Task<HttpResponse<string>> PostAsync(string href, string body, CancellationToken cancellationToken)
+        {
+            EnsureRequestUrlMatchesOrg(href);
+            var path = MakeUrlRelative(href);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, new Uri(path, UriKind.Relative));
+            request.Content = new StringContent(body, System.Text.Encoding.UTF8);
+            return SendAsync(request, cancellationToken);
+        }
+
+        public Task<HttpResponse<string>> PutAsync(string href, string body, CancellationToken cancellationToken)
+        {
+            EnsureRequestUrlMatchesOrg(href);
+            var path = MakeUrlRelative(href);
+
+            var request = new HttpRequestMessage(HttpMethod.Put, new Uri(path, UriKind.Relative));
+            request.Content = new StringContent(body, System.Text.Encoding.UTF8);
+            return SendAsync(request, cancellationToken);
+        }
+
+        public Task<HttpResponse<string>> DeleteAsync(string href, CancellationToken cancellationToken)
+        {
+            EnsureRequestUrlMatchesOrg(href);
+            var path = MakeUrlRelative(href);
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, new Uri(path, UriKind.Relative));
+            return SendAsync(request, cancellationToken);
+        }
     }
 }

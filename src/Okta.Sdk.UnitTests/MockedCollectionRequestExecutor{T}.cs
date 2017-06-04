@@ -64,5 +64,15 @@ namespace Okta.Sdk.UnitTests
         {
             throw new NotImplementedException();
         }
+
+        public Task<HttpResponse<string>> PutAsync(string href, string body, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpResponse<string>> DeleteAsync(string href, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

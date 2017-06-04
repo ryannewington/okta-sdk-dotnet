@@ -24,5 +24,10 @@ namespace Okta.Sdk
 
         Task<HttpResponse<TResponse>> PostAsync<TResponse>(string href, object postData, CancellationToken cancellationToken)
             where TResponse : Resource, new();
+
+        Task<HttpResponse<TResponse>> PutAsync<TResponse>(string href, object postData, CancellationToken cancellationToken)
+            where TResponse : Resource, new();
+
+        Task<HttpResponse> DeleteAsync(string href, CancellationToken cancellationToken);
     }
 }

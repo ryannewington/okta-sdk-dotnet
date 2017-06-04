@@ -13,5 +13,9 @@ namespace Okta.Sdk.Abstractions
         Task<HttpResponse<string>> GetAsync(string href, CancellationToken cancellationToken);
 
         Task<HttpResponse<string>> PostAsync(string href, string body, CancellationToken cancellationToken);
+
+        Task<HttpResponse<string>> PutAsync(string href, string body, CancellationToken cancellationToken);
+
+        Task<HttpResponse<string>> DeleteAsync(string href, CancellationToken cancellationToken);
     }
 }
