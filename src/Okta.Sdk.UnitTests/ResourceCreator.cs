@@ -4,17 +4,16 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk.UnitTests
 {
     public class ResourceCreator<T>
         where T : Resource, new()
     {
-        private readonly IChangeTrackingDictionary<string, object> _data
-            = new DefaultChangeTrackingDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
+        private readonly IDictionary<string, object> _data = new Dictionary<string, object>();
 
         public ResourceCreator<T> With(Expression<Func<T, object>> propertySelector, object value)
         {
@@ -38,7 +37,7 @@ namespace Okta.Sdk.UnitTests
         public static implicit operator T(ResourceCreator<T> creator)
         {
             var factory = new ResourceFactory();
-            return factory.Create<T>(creator._data);
+            return factory.CreateNew<T>(creator._data);
         }
 
         private static PropertyInfo GetPropertyName<TSource, TProperty>(Expression<Func<TSource, TProperty>> propertyLambda)

@@ -26,9 +26,11 @@ namespace Okta.Sdk
             Initialize(null);
         }
 
+        internal ResourceDictionaryType DictionaryType => _dictionaryType;
+
         public void Initialize(IDictionary<string, object> data)
         {
-            _data = data ?? _resourceFactory.NewDictionary(_dictionaryType);
+            _data = data ?? _resourceFactory.NewDictionary(_dictionaryType, null);
         }
 
         public IDictionary<string, object> GetModifiedData()
@@ -111,7 +113,7 @@ namespace Okta.Sdk
             where T : Resource, new()
         {
             var nestedData = GetProperty(key) as IDictionary<string, object>;
-            return _resourceFactory.Create<T>(nestedData);
+            return _resourceFactory.CreateFromExistingData<T>(nestedData);
         }
     }
 }

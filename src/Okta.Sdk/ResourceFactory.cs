@@ -10,22 +10,33 @@ namespace Okta.Sdk
 {
     public sealed class ResourceFactory
     {
-        public IDictionary<string, object> NewDictionary(ResourceDictionaryType type)
+        public IDictionary<string, object> NewDictionary(ResourceDictionaryType type, IDictionary<string, object> existingData)
         {
+            var initialData = existingData ?? new Dictionary<string, object>();
+
             switch (type)
             {
-                case ResourceDictionaryType.Default: return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-                case ResourceDictionaryType.ChangeTracking: return new DefaultChangeTrackingDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
+                case ResourceDictionaryType.Default: return new Dictionary<string, object>(initialData, StringComparer.OrdinalIgnoreCase);
+                case ResourceDictionaryType.ChangeTracking: return new DefaultChangeTrackingDictionary(initialData, StringComparer.OrdinalIgnoreCase);
             }
 
             throw new ArgumentException($"Unknown resource dictionary type {type}");
         }
 
-        public T Create<T>(IDictionary<string, object> data)
+        public T CreateFromExistingData<T>(IDictionary<string, object> data)
             where T : Resource, new()
         {
             var resource = new T();
             resource.Initialize(data);
+            return resource;
+        }
+
+        public T CreateNew<T>(IDictionary<string, object> data)
+            where T : Resource, new()
+        {
+            var resource = new T();
+            var dictionary = NewDictionary(resource.DictionaryType, data);
+            resource.Initialize(dictionary);
             return resource;
         }
     }
