@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Okta.Sdk.Abstractions;
 using Xunit;
 
 namespace Okta.Sdk.UnitTests
@@ -23,20 +22,19 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessNestedProperties()
         {
-            var data = new Dictionary<string, object>()
+            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["foo"] = "abc",
                 ["bar"] = true,
-                ["nested"] = new Dictionary<string, object>()
+                ["nested"] = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                 {
                     ["foo"] = "nested is neet!",
                     ["Bar"] = false,
                 },
             };
-            var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
 
             var resource = new TestNestedResource();
-            resource.Initialize(changeTrackingDictionary);
+            resource.Initialize(data);
 
             resource.Should().NotBeNull();
             resource.Foo.Should().Be("abc");

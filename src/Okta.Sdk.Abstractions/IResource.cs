@@ -3,19 +3,13 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections.Generic;
 
 namespace Okta.Sdk.Abstractions
 {
-    /// <summary>
-    /// Marker interface for resources.
-    /// </summary>
-    public interface IResource
-    {
-        void Initialize(IChangeTrackingDictionary<string, object> data);
+    //public interface IResource
+    //{
+    //    IDictionary<string, object> GetModifiedData();
 
-        IDictionary<string, object> GetModifiedData();
-
-        IChangeTrackingDictionary<string, object> GetData();
-    }
+    //    //IChangeTrackingDictionary<string, object> GetData();
+    //}
 }

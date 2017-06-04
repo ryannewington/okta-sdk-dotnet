@@ -6,17 +6,17 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Okta.Sdk.Abstractions
+namespace Okta.Sdk
 {
     public interface IOktaClient
     {
         Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))
-            where T : IResource, new();
+            where T : Resource, new();
 
         Task<TResponse> PostAsync<TResponse>(
             string href,
             object model,
             CancellationToken cancellationToken = default(CancellationToken))
-            where TResponse : IResource, new();
+            where TResponse : Resource, new();
     }
 }

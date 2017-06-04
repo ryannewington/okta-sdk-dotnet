@@ -17,7 +17,7 @@ namespace Okta.Sdk
     public sealed class RecursiveDictionaryConverter : CustomCreationConverter<IDictionary<string, object>>
     {
         public override IDictionary<string, object> Create(Type objectType)
-            => new Dictionary<string, object>();
+            => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         public override bool CanConvert(Type objectType)
             // We want to handle explicit objects and

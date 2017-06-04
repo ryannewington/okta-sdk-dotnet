@@ -4,23 +4,29 @@
 // </copyright>
 
 using System;
-using System.Linq;
-using System.Reflection;
-using Okta.Sdk.Abstractions;
+using System.Collections.Generic;
 
 namespace Okta.Sdk
 {
     public sealed class ResourceFactory
     {
-        public DefaultChangeTrackingDictionary NewDictionary()
-            => new DefaultChangeTrackingDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
-
-        public T Create<T>(IChangeTrackingDictionary<string, object> data)
-            where T : IResource, new()
+        public IDictionary<string, object> NewDictionary(ResourceDictionaryType type)
         {
-            var model = new T();
-            model.Initialize(data);
-            return model;
+            switch (type)
+            {
+                case ResourceDictionaryType.Default: return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                case ResourceDictionaryType.ChangeTracking: return new DefaultChangeTrackingDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
+            }
+
+            throw new ArgumentException($"Unknown resource dictionary type {type}");
+        }
+
+        public T Create<T>(IDictionary<string, object> data)
+            where T : Resource, new()
+        {
+            var resource = new T();
+            resource.Initialize(data);
+            return resource;
         }
     }
 }

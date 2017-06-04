@@ -11,7 +11,7 @@ using Okta.Sdk.Abstractions;
 namespace Okta.Sdk.UnitTests
 {
     public class ResourceCreator<T>
-        where T : IResource, new()
+        where T : Resource, new()
     {
         private readonly IChangeTrackingDictionary<string, object> _data
             = new DefaultChangeTrackingDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);

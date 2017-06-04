@@ -6,12 +6,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
     public sealed class CollectionClient<T> : IAsyncEnumerable<T>
-        where T : IResource, new()
+        where T : Resource, new()
     {
         private readonly IDataStore _dataStore;
         private readonly string _uri;

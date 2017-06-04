@@ -5,36 +5,50 @@
 
 using System;
 using System.Collections.Generic;
-using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
-    public class Resource : IResource
+    public class Resource
     {
         private readonly ResourceFactory _resourceFactory;
-        private IChangeTrackingDictionary<string, object> _data;
+        private readonly ResourceDictionaryType _dictionaryType;
+        private IDictionary<string, object> _data;
 
         public Resource()
+            : this(ResourceDictionaryType.Default)
+        {
+
+        }
+
+        public Resource(ResourceDictionaryType dictionaryType)
         {
             _resourceFactory = new ResourceFactory();
-            Initialize();
+            _dictionaryType = dictionaryType;
+            Initialize(null);
         }
 
-        public void Initialize(IChangeTrackingDictionary<string, object> data = null)
+        public void Initialize(IDictionary<string, object> data)
         {
-            _data = data ?? _resourceFactory.NewDictionary();
+            _data = data ?? _resourceFactory.NewDictionary(_dictionaryType);
         }
 
-        public IChangeTrackingDictionary<string, object> GetData() => _data;
-
-        public IDictionary<string, object> GetModifiedData() => (IDictionary<string, object>)_data.Difference;
+        public IDictionary<string, object> GetModifiedData()
+        {
+            switch (_data)
+            {
+                case DefaultChangeTrackingDictionary changeTrackingDictionary:
+                    return (IDictionary<string, object>)changeTrackingDictionary.Difference;
+                default:
+                    return _data;
+            }
+        }
 
         public void SetProperty(string key, object value)
             => _data[key] = value;
 
         public void SetResourceProperty<T>(string key, T value)
-            where T : IResource
-            => SetProperty(key, value?.GetData());
+            where T : Resource
+            => SetProperty(key, value?._data);
 
         public object GetProperty(string key)
         {
@@ -95,9 +109,9 @@ namespace Okta.Sdk
         }
 
         public T GetProperty<T>(string key)
-            where T : IResource, new()
+            where T : Resource, new()
         {
-            var nestedData = GetProperty(key) as IChangeTrackingDictionary<string, object>;
+            var nestedData = GetProperty(key) as IDictionary<string, object>;
             return _resourceFactory.Create<T>(nestedData);
         }
     }

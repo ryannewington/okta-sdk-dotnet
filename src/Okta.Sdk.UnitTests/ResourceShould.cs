@@ -33,7 +33,7 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void InstantiateDerivedResourceWithData()
         {
-            var data = new DefaultChangeTrackingDictionary(keyComparer: StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Foo"] = "bar!",
                 ["bar"] = true,
@@ -49,15 +49,14 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessStringProperty()
         {
-            var data = new Dictionary<string, object>()
+            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["foo"] = "abc",
                 ["empty"] = string.Empty,
                 ["nothing"] = null,
             };
-            var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
-            resource.Initialize(changeTrackingDictionary);
+            resource.Initialize(data);
 
             resource.GetStringProperty("foo").Should().Be("abc");
             resource.GetStringProperty("empty").Should().Be(string.Empty);
@@ -68,15 +67,14 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessBooleanProperty()
         {
-            var data = new Dictionary<string, object>()
+            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["yes"] = true,
                 ["no"] = false,
                 ["nothing"] = null,
             };
-            var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
-            resource.Initialize(changeTrackingDictionary);
+            resource.Initialize(data);
 
             resource.GetBooleanProperty("yes").Should().BeTrue();
             resource.GetBooleanProperty("no").Should().BeFalse();
@@ -87,15 +85,14 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessIntProperty()
         {
-            var data = new Dictionary<string, object>()
+            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["min"] = int.MinValue,
                 ["max"] = int.MaxValue,
                 ["nothing"] = null,
             };
-            var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
-            resource.Initialize(changeTrackingDictionary);
+            resource.Initialize(data);
 
             resource.GetIntProperty("min").Should().Be(int.MinValue);
             resource.GetIntProperty("max").Should().Be(int.MaxValue);
@@ -106,15 +103,14 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessLongProperty()
         {
-            var data = new Dictionary<string, object>()
+            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["min"] = long.MinValue,
                 ["max"] = long.MaxValue,
                 ["nothing"] = null,
             };
-            var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
-            resource.Initialize(changeTrackingDictionary);
+            resource.Initialize(data);
 
             resource.GetLongProperty("min").Should().Be(long.MinValue);
             resource.GetLongProperty("max").Should().Be(long.MaxValue);
@@ -125,15 +121,14 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessDateTimeProperty()
         {
-            var data = new Dictionary<string, object>()
+            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
             {
                 ["dto"] = new DateTimeOffset(2015, 12, 27, 20, 15, 00, TimeSpan.FromHours(-6)),
                 ["iso"] = "2016-11-06T17:05:30.400-08:00",
                 ["nothing"] = null,
             };
-            var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
             var resource = new Resource();
-            resource.Initialize(changeTrackingDictionary);
+            resource.Initialize(data);
 
             resource.GetDateTimeProperty("dto").Should().Be(new DateTimeOffset(2015, 12, 27, 20, 15, 00, TimeSpan.FromHours(-6)));
             resource.GetDateTimeProperty("iso").Should().Be(new DateTimeOffset(2016, 11, 6, 17, 05, 30, 400, TimeSpan.FromHours(-8)));

@@ -3,12 +3,16 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
-using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk.UnitTests
 {
     public class TestResource : Resource
     {
+        public TestResource()
+            : base(ResourceDictionaryType.ChangeTracking)
+        {
+        }
+
         public string Foo
         {
             get => GetStringProperty("foo");
