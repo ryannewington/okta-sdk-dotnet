@@ -22,19 +22,19 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessNestedProperties()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>()
             {
                 ["foo"] = "abc",
                 ["bar"] = true,
-                ["nested"] = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                ["nested"] = new Dictionary<string, object>()
                 {
                     ["foo"] = "nested is neet!",
                     ["Bar"] = false,
                 },
             };
 
-            var resource = new TestNestedResource();
-            resource.Initialize(data);
+            var factory = new ResourceFactory();
+            var resource = factory.CreateNew<TestNestedResource>(data);
 
             resource.Should().NotBeNull();
             resource.Foo.Should().Be("abc");
@@ -58,9 +58,10 @@ namespace Okta.Sdk.UnitTests
                     ["Bar"] = false,
                 },
             };
-            var changeTrackingDictionary = new DefaultChangeTrackingDictionary(data, StringComparer.OrdinalIgnoreCase);
-            var resource = new TestNestedResource();
-            resource.Initialize(changeTrackingDictionary);
+
+            var factory = new ResourceFactory();
+            var resource = factory.CreateNew<TestNestedResource>(data);
+
             resource.GetModifiedData().Count.Should().Be(0);
 
             resource.Nested.Bar = true;

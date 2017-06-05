@@ -28,7 +28,7 @@ namespace Okta.Sdk
 
         internal ResourceDictionaryType DictionaryType => _dictionaryType;
 
-        public void Initialize(IDictionary<string, object> data)
+        internal void Initialize(IDictionary<string, object> data)
         {
             _data = data ?? _resourceFactory.NewDictionary(_dictionaryType, null);
         }
@@ -44,23 +44,93 @@ namespace Okta.Sdk
             }
         }
 
-        public void SetProperty(string key, object value)
-            => _data[key] = value;
+        public object this[string key]
+        {
+            get => GetPropertyOrNull(key);
+            set => SetProperty(key, value);
+        }
 
-        public void SetResourceProperty<T>(string key, T value)
-            where T : Resource
-            => SetProperty(key, value?._data);
+        /// <summary>
+        /// Gets a property from the API resource.
+        /// </summary>
+        /// <remarks>In derived classes, use the more specific methods such as <see cref="GetStringProperty(string)"/> and <see cref="GetIntProperty(string)"/> instead.</remarks>
+        /// <typeparam name="T">The property type.</typeparam>
+        /// <param name="key">The property name.</param>
+        /// <returns>The strongly-typed property value, or <c>null</c>.</returns>
+        public T GetProperty<T>(string key)
+            where T : class, new() // forces value types to be Nullable<T>
+        {
+            if (typeof(T) == typeof(object))
+            {
+                return (T)GetPropertyOrNull(key);
+            }
 
-        public object GetProperty(string key)
+            if (typeof(T) == typeof(string))
+            {
+                return GetStringProperty(key) as T;
+            }
+
+            if (typeof(T) == typeof(bool?))
+            {
+                return GetBooleanProperty(key) as T;
+            }
+
+            if (typeof(T) == typeof(int?))
+            {
+                return GetIntProperty(key) as T;
+            }
+
+            if (typeof(T) == typeof(long?))
+            {
+                return GetLongProperty(key) as T;
+            }
+
+            if (typeof(T) == typeof(DateTimeOffset?))
+            {
+                return GetDateTimeProperty(key) as T;
+            }
+
+            if (typeof(T) == typeof(DateTime?))
+            {
+                throw new InvalidOperationException("Use DateTimeOffset instead.");
+            }
+
+            var propertyData = GetPropertyOrNull(key);
+            if (propertyData == null)
+            {
+                return null;
+            }
+
+            if (propertyData is IDictionary<string, object> nestedResourceData)
+            {
+                return _resourceFactory.CreateFromExistingData<T>(nestedResourceData);
+            }
+        }
+
+        private object GetPropertyOrNull(string key)
         {
             _data.TryGetValue(key, out var value);
             return value;
         }
 
-        public string GetStringProperty(string key)
-            => GetProperty(key)?.ToString();
+        private void SetProperty(string key, object value)
+        {
+            switch (value)
+            {
+                case Resource resource:
+                    SetProperty(key, resource?._data);
+                    break;
 
-        public bool? GetBooleanProperty(string key)
+                default:
+                    _data[key] = value;
+                    break;
+            }
+        }
+
+        protected string GetStringProperty(string key)
+            => GetPropertyOrNull(key)?.ToString();
+
+        protected bool? GetBooleanProperty(string key)
         {
             var raw = GetStringProperty(key);
             if (raw == null)
@@ -71,7 +141,7 @@ namespace Okta.Sdk
             return bool.Parse(raw);
         }
 
-        public int? GetIntProperty(string key)
+        protected int? GetIntProperty(string key)
         {
             var raw = GetStringProperty(key);
             if (raw == null)
@@ -82,7 +152,7 @@ namespace Okta.Sdk
             return int.Parse(raw);
         }
 
-        public long? GetLongProperty(string key)
+        protected long? GetLongProperty(string key)
         {
             var raw = GetStringProperty(key);
             if (raw == null)
@@ -93,7 +163,7 @@ namespace Okta.Sdk
             return long.Parse(raw);
         }
 
-        public DateTimeOffset? GetDateTimeProperty(string key)
+        protected DateTimeOffset? GetDateTimeProperty(string key)
         {
             var raw = GetStringProperty(key);
             if (raw == null)
@@ -104,15 +174,10 @@ namespace Okta.Sdk
             return DateTimeOffset.Parse(raw);
         }
 
-        public IList<T> GetListProperty<T>(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public T GetProperty<T>(string key)
+        protected T GetResourceProperty<T>(string key)
             where T : Resource, new()
         {
-            var nestedData = GetProperty(key) as IDictionary<string, object>;
+            var nestedData = GetPropertyOrNull(key) as IDictionary<string, object>;
             return _resourceFactory.CreateFromExistingData<T>(nestedData);
         }
     }
