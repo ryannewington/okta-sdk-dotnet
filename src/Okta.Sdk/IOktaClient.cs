@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Okta.Sdk
 {
-    public interface IOktaClient
+    public partial interface IOktaClient
     {
         Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))
             where T : Resource, new();
