@@ -1,0 +1,44 @@
+// <copyright file="{{modelName}}.cs" company="Okta, Inc">
+// Copyright (c) 2014-2017 Okta, Inc. All rights reserved.
+// Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
+// </copyright>
+
+// Do not modify this file directly. This file was automatically generated with:
+// spec.json - {{specVersion}}
+
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Okta.Sdk
+{
+    public sealed class {{modelName}} : Resource
+    {
+        {{#if supportsPartialUpdates}}
+        public {{modelName}}()
+            : base(ResourceDictionaryType.ChangeTracking)
+        {
+        }
+
+        {{/if}}
+        {{#each properties}}
+        {{#unless hidden}}
+        {{#if readOnly}}
+        public {{{propToCLRType this}}} {{pascalCase propertyName}} => GetStringProperty("{{propertyName}}");
+        {{else}}
+        public {{{propToCLRType this}}} {{pascalCase propertyName}}
+        {
+            get => GetStringProperty("{{propertyName}}");
+            set => SetResourceProperty("{{propertyName}}", value);
+        }
+        {{/if}}
+        {{/unless}}
+        {{/each}}
+    }
+}
+
+
+
+
+
+
+

@@ -1,159 +1,88 @@
-const _ = require('lodash');
-const js = module.exports;
-const generatorLangVersion = "0.0.1";
+const csharp = module.exports;
 
-js.process = (spec, handlebars) => {
+/**
+ * This file is used by the @okta/openapi generator.  It defines language-specific
+ * post-processing of the JSON spec, as well as handebars helpers.  This file is meant
+ * to give you control over the data that handlebars uses when processing your templates
+ */
 
-  // Helper functions
-  let toValidName = (original) => toPascalCase(replaceIllegalChars(original));
+const partialUpdateList = new Set([
+  'User',
+  'UserProfile'
+]);
 
-  function toPascalCase(original) {
-      if (!original) return original;
-      return original[0].toUpperCase() + original.slice(1);
+const getType = (name) => {
+  switch(name) {
+    case 'boolean': return 'bool?';
+    case 'integer': return 'int?';
+    case 'dateTime': return 'DateTimeOffset?';
+    default: return name;
   }
+};
 
-  function replaceIllegalChars(original) {
-      if (!original) return original;
-      
-      return original
-        .replace('$', '')
-        .replace('#', '');
+function paramToCLRType(param) {
+  return getType(param.type);
+}
+
+function nbsp(times) {
+  if (typeof times !== 'number')times = 1;
+  return ' '.repeat(times);
+}
+
+function propToCLRType(prop) {
+  switch (prop.commonType) {
+    case 'array': return `${getType(prop.model)}[]`;
+    case 'object': return prop.model;
+    case 'hash': return `IDictionary<string, ${getType(prop.model)}>`;
+    default: return getType(prop.commonType);
   }
+}
 
-  function toClrFriendlyTypeName(prop) {
-    const mapping = {
-      "boolean": "bool",
-      "integer": "int",
+function exists(obj, key) {
+  return obj && obj.hasOwnProperty(key);
+}
 
-      // todo object? (FactoryAuthenticationContext)
-    }
+csharp.process = ({spec, operations, models, handlebars}) => {
 
-    let mapName = (original) => {
-      let rewritten = mapping[original];
-      return rewritten ? rewritten : original;
-    }
-
-    let mapped = mapName(prop.type);
-
-    if (prop.type === 'array') {
-      mapped = mapName(prop.items.type) + '[]';
-    }
-
-    return mapped;
-  }
-
-  // A map of operation Id's do their definition, so that
-  // we can reference them when building out methods for x-okta-links
-  const operationIdMap = {};
-
-  // Collect all the operations
-  spec.easyOperations = [];
-  for (let pathName in spec.paths) {
-    const path = spec.paths[pathName];
-    for (let methodName in path) {
-      const method = path[methodName];
-
-      // List of query params definitions for this method
-      const easyQueryParams = method.parameters.filter(param => param.in === 'query');
-
-      // List of positional path arguments for this method
-      const arguments = method.parameters.filter(param => param.in === 'path');
-
-      // Determine the return type
-      const easySuccessSchema = _.get(method, 'responses["200"].schema');
-      if (easySuccessSchema) {
-        if (easySuccessSchema.items && easySuccessSchema.items['$ref']) {
-          easySuccessSchema.items.type = _.last(easySuccessSchema.items['$ref'].split('/'));
-        } else if (easySuccessSchema['$ref']) {
-          easySuccessSchema.type = _.last(easySuccessSchema['$ref'].split('/'));
-        }
-      }
-
-      const operation = Object.assign({
-        easyQueryParams,
-        arguments,
-        easySuccessSchema,
-        path: pathName,
-        method: methodName
-      }, method);
-      operationIdMap[method.operationId] = operation;
-      spec.easyOperations.push(operation);
-    }
-  }
-
-  // make models easier to loop through
-  spec.easyModels = Object.entries(spec.definitions)
-    .map(([modelName, model]) => {
-      model.className = toValidName(modelName);
-
-      model.easyLinks = model['x-okta-links'];
-      if (model.easyLinks) {
-        model.easyLinks.forEach(link => {
-          link.operation = operationIdMap[link.operationId];
-          link.operationName = toValidName(link.operationId);
-
-          if (link.operation.easySuccessSchema.type) {
-            link.returnType = toClrFriendlyTypeName(link.operation.easySuccessSchema);
-          }
-        });
-      }
-
-      if (model.properties) {
-          model.easyProperties = Object.entries(model.properties)
-            .map(([propName, prop]) => {
-              if (propName[0] === '_') {
-                prop.internal = true;
-              }
-
-              // Make sure properties are PascalCase
-              prop.propName = toValidName(propName);
-              
-              // Handle reference types
-              let ref = prop['$ref']
-              if (ref) {
-                let refModelName = _.last(ref.split('/'));
-                refModelName = toValidName(refModelName);
-                prop.type = refModelName;
-              }
-
-              prop.type = toClrFriendlyTypeName(prop);
-
-              return prop;
-            });
-      }
-
-      model.specVersion = spec.info.version;
-      model.generatorLangVersion = generatorLangVersion;
-
-      return model;
-    });
+  handlebars.registerHelper({
+    paramToCLRType,
+    propToCLRType,
+    exists,
+    nbsp
+  });
 
   const templates = [];
 
   // add all the models
-  for (let model of spec.easyModels) {
+  for (let model of models) {
+    model.specVersion = spec.info.version;
+
+    if (partialUpdateList.has(model.modelName)) {
+      model.supportsPartialUpdates = true;
+    }
+
+    for (let property of model.properties) {
+      if (property.model === 'object') {
+        property.hidden = true;
+        continue;
+      }
+    }
+
     templates.push({
-      src: 'ModelInterface.cs.hbs',
-      dest: `src/models/I${model.className}.cs`,
+      src: 'Model.cs.hbs',
+      dest: `Models/${model.modelName}.cs`,
       context: model
     });
-
-    // TODO also return all of the concrete implementations
   }
 
-  // Handlebars helpers
-
-  handlebars.registerHelper('getOperationArgs', (linkDefinition, operation) => {
-    // TODO! This needs to return a list of arguments like:
-    // string foo, int bar...
-    return {};
-  });
-
-  handlebars.registerHelper('getOperationArgsCount', (linkDefinition, operation) => {
-    // TODO! This needs to return a list of arguments like:
-    // string foo, int bar...
-    return 0;
+  templates.push({
+    src: 'ApiClient.cs.hbs',
+    dest: `FatClient.cs`,
+    context: {
+      spec,
+      operations
+    }
   });
 
   return templates;
-};
+}
