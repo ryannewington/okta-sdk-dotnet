@@ -20,10 +20,10 @@ namespace Okta.Sdk
         {{nbsp 0}}
 
             {{~#if isArray~}}
-                IAsyncEnumerable<{{operation.responseModel}}> {{pascalCase operationId}}()
+                public IAsyncEnumerable<{{operation.responseModel}}> {{pascalCase operationId}}()
 
             {{~else~}}
-                Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
+                public Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
                 {{~nbsp}}
                 {{~pascalCase operationId}}Async(
                     {{~#if bodyModel}}
