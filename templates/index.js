@@ -11,12 +11,12 @@ const partialUpdateList = new Set([
   'UserProfile'
 ]);
 
-const getType = (name) => {
-  switch(name) {
+const getType = (specType) => {
+  switch(specType) {
     case 'boolean': return 'bool?';
     case 'integer': return 'int?';
     case 'dateTime': return 'DateTimeOffset?';
-    default: return name;
+    default: return specType;
   }
 };
 
@@ -38,6 +38,17 @@ function propToCLRType(prop) {
   }
 }
 
+function getterName(prop) {
+  const clrType = propToCLRType(prop);
+  switch (clrType) {
+    case 'bool?': return 'GetBooleanProperty';
+    case 'int?': return 'GetIntegerProperty';
+    case 'DateTimeOffset?': return 'GetDateTimeProperty';
+    case 'string': return 'GetStringProperty';
+    default: return `GetProperty<${clrType}>`;
+  }
+}
+
 function exists(obj, key) {
   return obj && obj.hasOwnProperty(key);
 }
@@ -47,6 +58,7 @@ csharp.process = ({spec, operations, models, handlebars}) => {
   handlebars.registerHelper({
     paramToCLRType,
     propToCLRType,
+    getterName,
     exists,
     nbsp
   });
@@ -70,14 +82,23 @@ csharp.process = ({spec, operations, models, handlebars}) => {
 
     templates.push({
       src: 'Model.cs.hbs',
-      dest: `Models/${model.modelName}.cs`,
+      dest: `Models/${model.modelName}.Generated.cs`,
       context: model
     });
   }
+  
+  templates.push({
+    src: 'IOktaClient.cs.hbs',
+    dest: `IOktaClient.Generated.cs`,
+    context: {
+      spec,
+      operations
+    }
+  });
 
   templates.push({
-    src: 'ApiClient.cs.hbs',
-    dest: `FatClient.cs`,
+    src: 'OktaClient.cs.hbs',
+    dest: `OktaClient.Generated.cs`,
     context: {
       spec,
       operations

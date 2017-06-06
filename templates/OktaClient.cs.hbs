@@ -1,4 +1,4 @@
-// <copyright file="Client.cs" company="Okta, Inc">
+// <copyright file="OktaClient.Generated.cs" company="Okta, Inc">
 // Copyright (c) 2014-2017 Okta, Inc. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
@@ -6,19 +6,21 @@
 // Do not modify this file directly. This file was automatically generated with:
 // spec.json - {{spec.info.version}}
 
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Okta.Sdk
 {
-    public class FatClient
+    public partial class OktaClient
     {
         {{~#each operations as |operation|}}
         {{~nbsp 0}}
         {{nbsp 0}}
 
             {{~#if isArray~}}
-                IAsyncEnumerable<{{operation.responseModel}}> {{pascalCase operationId}}();
+                IAsyncEnumerable<{{operation.responseModel}}> {{pascalCase operationId}}()
 
             {{~else~}}
                 Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
@@ -42,9 +44,12 @@ namespace Okta.Sdk
                         {{~/unless}}
                         {{~nbsp 0}},{{nbsp}}
                     {{~/each}}
-                    {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken)
-                {{~nbsp 0}});
+                    {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken))
             {{~/if}}
+            {{~nbsp 0}}
+        {
+            throw new NotImplementedException();
+        }
         
         {{~nbsp 0}}
 {{nbsp 0}}

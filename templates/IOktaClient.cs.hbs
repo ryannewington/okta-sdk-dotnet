@@ -1,0 +1,54 @@
+// <copyright file="IOktaClient.Generated.cs" company="Okta, Inc">
+// Copyright (c) 2014-2017 Okta, Inc. All rights reserved.
+// Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
+// </copyright>
+
+// Do not modify this file directly. This file was automatically generated with:
+// spec.json - {{spec.info.version}}
+
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Okta.Sdk
+{
+    public partial interface IOktaClient
+    {
+        {{~#each operations as |operation|}}
+        {{~nbsp 0}}
+        {{nbsp 0}}
+
+            {{~#if isArray~}}
+                IAsyncEnumerable<{{operation.responseModel}}> {{pascalCase operationId}}();
+
+            {{~else~}}
+                Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
+                {{~nbsp}}
+                {{~pascalCase operationId}}Async(
+                    {{~#if bodyModel}}
+                        {{~bodyModel}} {{camelCase bodyModel}},
+                        {{~nbsp~}}
+                    {{~/if}}
+
+                    {{~#each pathParams}}
+                    {{~/each}}
+                    
+                    {{~#each queryParams}} 
+                        {{~paramToCLRType this}}{{nbsp}}
+                        {{~name}}
+                        {{~#unless required}} =
+                            {{~#if (exists this "default")}} {{default}}
+                            {{~else}} null
+                            {{~/if}}
+                        {{~/unless}}
+                        {{~nbsp 0}},{{nbsp}}
+                    {{~/each}}
+                    {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken)
+                {{~nbsp 0}});
+            {{~/if}}
+        
+        {{~nbsp 0}}
+{{nbsp 0}}
+        {{~/each}}
+    }
+}
