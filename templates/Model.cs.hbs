@@ -20,8 +20,8 @@ namespace Okta.Sdk
             : base(ResourceDictionaryType.ChangeTracking)
         {
         }
-        {{/if}}
 
+        {{/if}}
         {{~nbsp 0}}
         {{~#each properties}}
         {{#unless hidden}}
@@ -31,7 +31,7 @@ namespace Okta.Sdk
         public {{{propToCLRType this}}} {{pascalCase propertyName}}
         {
             get => {{{getterName this}}}("{{propertyName}}");
-            set => SetProperty("{{propertyName}}", value);
+            set => this["{{propertyName}}"] = value;
         }
         {{/if}}
         {{/unless}}

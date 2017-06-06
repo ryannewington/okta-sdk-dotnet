@@ -45,7 +45,7 @@ function getterName(prop) {
     case 'int?': return 'GetIntegerProperty';
     case 'DateTimeOffset?': return 'GetDateTimeProperty';
     case 'string': return 'GetStringProperty';
-    default: return `GetProperty<${clrType}>`;
+    default: return `GetResourceProperty<${clrType}>`;
   }
 }
 
