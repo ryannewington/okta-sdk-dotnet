@@ -24,7 +24,7 @@ namespace Okta.Sdk
         {{/if}}
         {{~nbsp 0}}
         {{~#each properties}}
-        {{#unless hidden}}
+        {{~#unless hidden}}
         {{#if readOnly}}
         public {{{propToCLRType this}}} {{pascalCase propertyName}} => {{{getterName this}}}("{{propertyName}}");
         {{else}}

@@ -74,10 +74,25 @@ csharp.process = ({spec, operations, models, handlebars}) => {
     }
 
     for (let property of model.properties) {
-      if (property.model === 'object') {
+      if (property.model && property.model === 'object') {
+        console.log('Skipping object property', model.modelName, property.propertyName);
         property.hidden = true;
         continue;
       }
+
+      if (typeof property.commonType === 'undefined') {
+        console.log('Skipping property without commonType', model.modelName, property.propertyName);
+        property.hidden = true;
+        continue;
+      }
+
+      // todo: skip FactorDevice.links, Link.hints
+      // User._links
+      // UserGroup._embedded, UserGroup._links
+      // anything else?
+
+      // todo: special renames - ActivationToken.ActivationToken, anything else?
+      // log this as an issue?
     }
 
     templates.push({
