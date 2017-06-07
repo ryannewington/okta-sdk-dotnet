@@ -176,6 +176,9 @@ namespace Okta.Sdk
             return DateTimeOffset.Parse(raw);
         }
 
+        protected IList<T> GetArrayProperty<T>(string key)
+            => GetPropertyOrNull(key) as IList<T>;
+
         protected T GetResourceProperty<T>(string key)
             where T : Resource, new()
         {

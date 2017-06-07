@@ -6,3 +6,4 @@
 * Add methods to models
 * Remove `Generated/` from `.gitignore`
 * Remove `nbsp` and `exists` helpers after updating openapi dependency
+* Fix extra whitespace in generated code (low prio)
