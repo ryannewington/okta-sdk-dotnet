@@ -97,14 +97,14 @@ csharp.process = ({spec, operations, models, handlebars}) => {
 
     templates.push({
       src: 'Model.cs.hbs',
-      dest: `Models/${model.modelName}.Generated.cs`,
+      dest: `Generated/${model.modelName}.Generated.cs`,
       context: model
     });
   }
   
   templates.push({
     src: 'IOktaClient.cs.hbs',
-    dest: `IOktaClient.Generated.cs`,
+    dest: `Generated/IOktaClient.Generated.cs`,
     context: {
       spec,
       operations
@@ -113,7 +113,7 @@ csharp.process = ({spec, operations, models, handlebars}) => {
 
   templates.push({
     src: 'OktaClient.cs.hbs',
-    dest: `OktaClient.Generated.cs`,
+    dest: `Generated/OktaClient.Generated.cs`,
     context: {
       spec,
       operations

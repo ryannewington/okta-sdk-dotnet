@@ -31,6 +31,14 @@ namespace Okta.Sdk
                     {{~/if}}
 
                     {{~#each pathParams}}
+                        {{~paramToCLRType this}}{{nbsp}}
+                        {{~name}}
+                        {{~#unless required}} =
+                            {{~#if (exists this "default")}} {{default}}
+                            {{~else}} null
+                            {{~/if}}
+                        {{~/unless}}
+                        {{~nbsp 0}},{{nbsp}}
                     {{~/each}}
                     
                     {{~#each queryParams}} 
