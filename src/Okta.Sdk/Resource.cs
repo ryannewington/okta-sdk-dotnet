@@ -58,7 +58,6 @@ namespace Okta.Sdk
         /// <param name="key">The property name.</param>
         /// <returns>The strongly-typed property value, or <c>null</c>.</returns>
         public T GetProperty<T>(string key)
-            where T : class, new() // forces value types to be Nullable<T>
         {
             if (typeof(T) == typeof(object))
             {
@@ -67,27 +66,27 @@ namespace Okta.Sdk
 
             if (typeof(T) == typeof(string))
             {
-                return GetStringProperty(key) as T;
+                return (T)(object)GetStringProperty(key);
             }
 
             if (typeof(T) == typeof(bool?))
             {
-                return GetBooleanProperty(key) as T;
+                return (T)(object)GetBooleanProperty(key);
             }
 
             if (typeof(T) == typeof(int?))
             {
-                return GetIntProperty(key) as T;
+                return (T)(object)GetIntProperty(key);
             }
 
             if (typeof(T) == typeof(long?))
             {
-                return GetLongProperty(key) as T;
+                return (T)(object)GetLongProperty(key);
             }
 
             if (typeof(T) == typeof(DateTimeOffset?))
             {
-                return GetDateTimeProperty(key) as T;
+                return (T)(object)GetDateTimeProperty(key);
             }
 
             if (typeof(T) == typeof(DateTime?))
@@ -98,13 +97,16 @@ namespace Okta.Sdk
             var propertyData = GetPropertyOrNull(key);
             if (propertyData == null)
             {
-                return null;
+                return default(T);
             }
 
             if (propertyData is IDictionary<string, object> nestedResourceData)
             {
-                return _resourceFactory.CreateFromExistingData<T>(nestedResourceData);
+                throw new NotImplementedException(); // todo
+                //return _resourceFactory.CreateFromExistingData<T>(nestedResourceData);
             }
+
+            throw new NotImplementedException(); // tpdo
         }
 
         private object GetPropertyOrNull(string key)

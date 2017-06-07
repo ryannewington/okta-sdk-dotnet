@@ -1,5 +1,6 @@
 # v1.0 todo
 
+* List (array) properties
 * Emit doc comments from spec
 * Create UserClient, etc. from tags
 * Add methods to models

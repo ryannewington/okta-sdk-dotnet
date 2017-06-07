@@ -11,6 +11,15 @@ const partialUpdateList = new Set([
   'UserProfile'
 ]);
 
+const skipList = new Set([
+  'FactorDevice.links',
+  'Link.hints'
+]);
+
+const renameList = {
+  'ActivationToken.activationToken': 'token'
+};
+
 const getType = (specType) => {
   switch(specType) {
     case 'boolean': return 'bool?';
@@ -31,7 +40,7 @@ function nbsp(times) {
 
 function propToCLRType(prop) {
   switch (prop.commonType) {
-    case 'array': return `${getType(prop.model)}[]`;
+    case 'array': return `IList<${getType(prop.model)}>`;
     case 'object': return prop.model;
     case 'hash': return `IDictionary<string, ${getType(prop.model)}>`;
     default: return getType(prop.commonType);
@@ -39,7 +48,12 @@ function propToCLRType(prop) {
 }
 
 function getterName(prop) {
+  if (prop.commonType === 'array') {
+    return `GetArrayProperty<${getType(prop.model)}>`;
+  }
+
   const clrType = propToCLRType(prop);
+
   switch (clrType) {
     case 'bool?': return 'GetBooleanProperty';
     case 'int?': return 'GetIntegerProperty';
@@ -74,25 +88,35 @@ csharp.process = ({spec, operations, models, handlebars}) => {
     }
 
     for (let property of model.properties) {
+      let fullPath = `${model.modelName}.${property.propertyName}`;
+
       if (property.model && property.model === 'object') {
-        console.log('Skipping object property', model.modelName, property.propertyName);
+        console.log('Skipping object property', fullPath);
         property.hidden = true;
         continue;
       }
 
       if (typeof property.commonType === 'undefined') {
-        console.log('Skipping property without commonType', model.modelName, property.propertyName);
+        console.log('Skipping property without commonType', fullPath);
+        property.hidden = true;
+        continue;
+      }
+      
+      if (skipList.has(fullPath)) {
+        console.log('Skipping property on skipList', fullPath);
         property.hidden = true;
         continue;
       }
 
-      // todo: skip FactorDevice.links, Link.hints
+      if (renameList.hasOwnProperty(fullPath)) {
+        let newName = renameList[fullPath];
+        console.log(`Renaming property ${fullPath} to ${newName}`);
+        property.displayName = newName;
+      }
+
+      // skip
       // User._links
       // UserGroup._embedded, UserGroup._links
-      // anything else?
-
-      // todo: special renames - ActivationToken.ActivationToken, anything else?
-      // log this as an issue?
     }
 
     templates.push({
