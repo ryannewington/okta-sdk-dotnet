@@ -13,7 +13,11 @@ const partialUpdateList = new Set([
 
 const skipList = new Set([
   'FactorDevice.links',
-  'Link.hints'
+  'Link.hints',
+  'User._links',
+  'UserGroup._embedded',
+  'UserGroup._links',
+  'UserGroupStats._links'
 ]);
 
 const renameList = {
