@@ -5,11 +5,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Okta.Sdk
 {
     public sealed class ResourceFactory
     {
+        private static readonly TypeInfo ResourceTypeInfo = typeof(Resource).GetTypeInfo();
+
         public IDictionary<string, object> NewDictionary(ResourceDictionaryType type, IDictionary<string, object> existingData)
         {
             var initialData = existingData ?? new Dictionary<string, object>();
@@ -24,20 +28,28 @@ namespace Okta.Sdk
         }
 
         public T CreateFromExistingData<T>(IDictionary<string, object> data)
-            where T : Resource, new()
         {
-            var resource = new T();
+            if (!ResourceTypeInfo.IsAssignableFrom(typeof(T).GetTypeInfo()))
+            {
+                throw new InvalidOperationException("Resources must inherit from the Resource class.");
+            }
+
+            var resource = Activator.CreateInstance<T>() as Resource;
             resource.Initialize(data);
-            return resource;
+            return (T)(object)resource;
         }
 
         public T CreateNew<T>(IDictionary<string, object> data)
-            where T : Resource, new()
         {
-            var resource = new T();
+            if (!ResourceTypeInfo.IsAssignableFrom(typeof(T).GetTypeInfo()))
+            {
+                throw new InvalidOperationException("Resources must inherit from the Resource class.");
+            }
+
+            var resource = Activator.CreateInstance<T>() as Resource;
             var dictionary = NewDictionary(resource.DictionaryType, data);
             resource.Initialize(dictionary);
-            return resource;
+            return (T)(object)resource;
         }
     }
 }

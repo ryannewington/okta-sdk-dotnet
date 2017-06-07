@@ -5,11 +5,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Okta.Sdk
 {
     public class Resource
     {
+        private static readonly TypeInfo ResourceTypeInfo = typeof(Resource).GetTypeInfo();
+
         private readonly ResourceFactory _resourceFactory;
         private readonly ResourceDictionaryType _dictionaryType;
         private IDictionary<string, object> _data;
@@ -46,7 +49,7 @@ namespace Okta.Sdk
 
         public object this[string key]
         {
-            get => GetPropertyOrNull(key);
+            get => GetProperty<object>(key);
             set => SetProperty(key, value);
         }
 
@@ -94,16 +97,15 @@ namespace Okta.Sdk
                 throw new InvalidOperationException("Use DateTimeOffset instead.");
             }
 
+            if (ResourceTypeInfo.IsAssignableFrom(typeof(T).GetTypeInfo()))
+            {
+                return (T)(object)GetResourcePropertyInternal<T>(key);
+            }
+
             var propertyData = GetPropertyOrNull(key);
             if (propertyData == null)
             {
                 return default(T);
-            }
-
-            if (propertyData is IDictionary<string, object> nestedResourceData)
-            {
-                throw new NotImplementedException(); // todo
-                //return _resourceFactory.CreateFromExistingData<T>(nestedResourceData);
             }
 
             throw new NotImplementedException(); // tpdo
@@ -115,7 +117,7 @@ namespace Okta.Sdk
             return value;
         }
 
-        private void SetProperty(string key, object value)
+        public void SetProperty(string key, object value)
         {
             switch (value)
             {
@@ -181,6 +183,9 @@ namespace Okta.Sdk
 
         protected T GetResourceProperty<T>(string key)
             where T : Resource, new()
+            => GetResourcePropertyInternal<T>(key);
+
+        private T GetResourcePropertyInternal<T>(string key)
         {
             var nestedData = GetPropertyOrNull(key) as IDictionary<string, object>;
             return _resourceFactory.CreateFromExistingData<T>(nestedData);
