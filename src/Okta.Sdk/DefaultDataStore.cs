@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
@@ -16,15 +17,17 @@ namespace Okta.Sdk
     {
         private readonly IRequestExecutor _requestExecutor;
         private readonly ISerializer _serializer;
+        private readonly ILogger _logger;
         private readonly ResourceFactory _resourceFactory;
 
         public DefaultDataStore(
             IRequestExecutor requestExecutor,
-            ISerializer serializer)
+            ISerializer serializer,
+            ILogger logger)
         {
             _requestExecutor = requestExecutor ?? throw new ArgumentNullException(nameof(requestExecutor));
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-            _resourceFactory = new ResourceFactory();
+            _resourceFactory = new ResourceFactory(_logger);
         }
 
         public IRequestExecutor RequestExecutor => _requestExecutor;

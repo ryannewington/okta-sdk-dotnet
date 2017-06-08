@@ -5,6 +5,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Okta.Sdk.UnitTests
@@ -17,7 +18,8 @@ namespace Okta.Sdk.UnitTests
             var mockRequestExecutor = new MockedStringRequestExecutor(@"{ ""foo"": ""bar"" }");
             var dataStore = new DefaultDataStore(
                 mockRequestExecutor,
-                new DefaultSerializer());
+                new DefaultSerializer(),
+                NullLogger.Instance);
 
             var client = new OktaClient(dataStore);
 

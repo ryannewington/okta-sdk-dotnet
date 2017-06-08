@@ -47,7 +47,8 @@ namespace Okta.Sdk
             // TODO pass proxy, connectionTimeout, etc
             DataStore = new DefaultDataStore(
                 new DefaultRequestExecutor(apiClientConfiguration.OrgUrl, apiClientConfiguration.Token, _logger),
-                new DefaultSerializer());
+                new DefaultSerializer(),
+                _logger);
         }
 
         public OktaClient(IDataStore dataStore)

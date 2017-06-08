@@ -142,9 +142,24 @@ namespace Okta.Sdk.UnitTests
         }
 
         [Fact]
+        public void AccessListProperty()
+        {
+            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["things"] = new List<object>() { "foo", "bar", "baz" },
+            };
+
+            var factory = new ResourceFactory();
+            var resource = factory.CreateNew<Resource>(data);
+
+            var things = resource.GetArrayProperty<string>("things");
+            things.Should().BeEquivalentTo("foo", "bar", "baz");
+        }
+
+        [Fact]
         public void TrackInstanceModifications()
         {
-            var resource = new TestResource()
+            var resource = new TestResource() // has DictionaryType.ChangeTracking
             {
                 Foo = "xyz",
             };

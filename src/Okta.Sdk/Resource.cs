@@ -6,6 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Okta.Sdk
 {
@@ -13,8 +15,9 @@ namespace Okta.Sdk
     {
         private static readonly TypeInfo ResourceTypeInfo = typeof(Resource).GetTypeInfo();
 
-        private readonly ResourceFactory _resourceFactory;
+        private ResourceFactory _resourceFactory;
         private readonly ResourceDictionaryType _dictionaryType;
+        private ILogger _logger;
         private IDictionary<string, object> _data;
 
         public Resource()
@@ -24,16 +27,17 @@ namespace Okta.Sdk
 
         public Resource(ResourceDictionaryType dictionaryType)
         {
-            _resourceFactory = new ResourceFactory();
             _dictionaryType = dictionaryType;
-            Initialize(null);
+            Initialize(null, null, null);
         }
 
         internal ResourceDictionaryType DictionaryType => _dictionaryType;
 
-        internal void Initialize(IDictionary<string, object> data)
+        internal void Initialize(ResourceFactory resourceFactory, IDictionary<string, object> data, ILogger logger)
         {
+            _resourceFactory = resourceFactory ?? new ResourceFactory();
             _data = data ?? _resourceFactory.NewDictionary(_dictionaryType, null);
+            _logger = logger ?? NullLogger.Instance;
         }
 
         public IDictionary<string, object> GetModifiedData()
@@ -178,8 +182,16 @@ namespace Okta.Sdk
             return DateTimeOffset.Parse(raw);
         }
 
-        protected IList<T> GetArrayProperty<T>(string key)
-            => GetPropertyOrNull(key) as IList<T>;
+        public IList<T> GetArrayProperty<T>(string key)
+        {
+            var genericList = GetPropertyOrNull(key) as IList<object>;
+            if (genericList == null)
+            {
+                return null;
+            }
+
+            return new CastingListAdapter<T>(genericList, _logger);
+        }
 
         protected T GetResourceProperty<T>(string key)
             where T : Resource, new()

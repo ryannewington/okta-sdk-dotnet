@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Okta.Sdk.UnitTests
@@ -28,7 +29,8 @@ namespace Okta.Sdk.UnitTests
             var mockRequestExecutor = new MockedCollectionRequestExecutor<User>(pageSize: 2, items: TestUsers);
             var dataStore = new DefaultDataStore(
                 mockRequestExecutor,
-                new DefaultSerializer());
+                new DefaultSerializer(),
+                NullLogger.Instance);
 
             var collection = new CollectionClient<User>(
                 dataStore, "http://mock-collection.dev", null);
@@ -42,7 +44,8 @@ namespace Okta.Sdk.UnitTests
             var mockRequestExecutor = new MockedCollectionRequestExecutor<User>(pageSize: 2, items: TestUsers);
             var dataStore = new DefaultDataStore(
                 mockRequestExecutor,
-                new DefaultSerializer());
+                new DefaultSerializer(),
+                NullLogger.Instance);
 
             var collection = new CollectionClient<User>(
                 dataStore, "http://mock-collection.dev", null);
