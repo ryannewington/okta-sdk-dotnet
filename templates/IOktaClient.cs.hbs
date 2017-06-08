@@ -16,6 +16,20 @@ namespace Okta.Sdk
     {
         {{~#each operations as |operation|}}
         {{~nbsp 0}}
+        /// <summary>
+        /// {{description}}
+        /// </summary>
+        {{#if bodyModel}}
+        /// <param name="{{camelCase bodyModel}}">The resource.</param>
+        {{/if}}
+        {{#each pathParams}}
+        /// <param name="{{name}}">{{description}}</param>
+        {{/each}}
+        {{#each queryParams}}
+        /// <param name="{{name}}">{{description}}</param>
+        {{/each}}
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         {{nbsp 0}}
 
             {{~#if isArray~}}
