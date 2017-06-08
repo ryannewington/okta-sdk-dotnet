@@ -16,6 +16,7 @@ namespace Okta.Sdk
     public partial class OktaClient
     {
         {{~#each operations as |operation|}}
+        {{~#unless hidden}}
         {{~nbsp 0}}
         /// <inheritdoc />
         {{nbsp 0}}
@@ -62,6 +63,7 @@ namespace Okta.Sdk
         
         {{~nbsp 0}}
 {{nbsp 0}}
+        {{~/unless}}
         {{~/each}}
     }
 }

@@ -15,6 +15,7 @@ namespace Okta.Sdk
     public partial interface IOktaClient
     {
         {{~#each operations as |operation|}}
+        {{~#unless hidden}}
         {{~nbsp 0}}
         /// <summary>
         /// {{description}}
@@ -71,6 +72,7 @@ namespace Okta.Sdk
         
         {{~nbsp 0}}
 {{nbsp 0}}
+        {{~/unless}}
         {{~/each}}
     }
 }

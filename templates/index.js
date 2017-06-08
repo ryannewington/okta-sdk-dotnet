@@ -11,7 +11,7 @@ const partialUpdateList = new Set([
   'UserProfile'
 ]);
 
-const skipList = new Set([
+const propertySkipList = new Set([
   'FactorDevice.links',
   'Link.hints',
   'User._links',
@@ -20,9 +20,12 @@ const skipList = new Set([
   'UserGroupStats._links'
 ]);
 
-const renameList = {
+const propertyRenameList = {
   'ActivationToken.activationToken': 'token'
 };
+
+const operationSkipList = new Set([
+]);
 
 const getType = (specType) => {
   switch(specType) {
@@ -106,21 +109,17 @@ csharp.process = ({spec, operations, models, handlebars}) => {
         continue;
       }
       
-      if (skipList.has(fullPath)) {
-        console.log('Skipping property on skipList', fullPath);
+      if (propertySkipList.has(fullPath)) {
+        console.log('Skipping property', fullPath);
         property.hidden = true;
         continue;
       }
 
-      if (renameList.hasOwnProperty(fullPath)) {
-        let newName = renameList[fullPath];
+      if (propertyRenameList.hasOwnProperty(fullPath)) {
+        let newName = propertyRenameList[fullPath];
         console.log(`Renaming property ${fullPath} to ${newName}`);
         property.displayName = newName;
       }
-
-      // skip
-      // User._links
-      // UserGroup._embedded, UserGroup._links
     }
 
     templates.push({
@@ -128,6 +127,15 @@ csharp.process = ({spec, operations, models, handlebars}) => {
       dest: `Generated/${model.modelName}.Generated.cs`,
       context: model
     });
+  }
+
+  // pre-process the operations
+  for (let operation of operations) {
+      if (operationSkipList.has(operation.operationId)) {
+        console.log('Skipping operation', operation.operationId);
+        operation.hidden = true;
+        continue;
+      }
   }
   
   templates.push({
