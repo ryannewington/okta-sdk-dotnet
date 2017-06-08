@@ -33,42 +33,43 @@ namespace Okta.Sdk
         /// <returns></returns>
         {{nbsp 0}}
 
-            {{~#if isArray~}}
-                IAsyncEnumerable<{{operation.responseModel}}> {{pascalCase operationId}}();
-
-            {{~else~}}
-                Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
-                {{~nbsp}}
-                {{~pascalCase operationId}}Async(
-                    {{~#if bodyModel}}
-                        {{~bodyModel}} {{camelCase bodyModel}},
-                        {{~nbsp~}}
-                    {{~/if}}
-
-                    {{~#each pathParams}}
-                        {{~paramToCLRType this}}{{nbsp}}
-                        {{~name}}
-                        {{~#unless required}} =
-                            {{~#if (exists this "default")}} {{default}}
-                            {{~else}} null
-                            {{~/if}}
-                        {{~/unless}}
-                        {{~nbsp 0}},{{nbsp}}
-                    {{~/each}}
-                    
-                    {{~#each queryParams}} 
-                        {{~paramToCLRType this}}{{nbsp}}
-                        {{~name}}
-                        {{~#unless required}} =
-                            {{~#if (exists this "default")}} {{default}}
-                            {{~else}} null
-                            {{~/if}}
-                        {{~/unless}}
-                        {{~nbsp 0}},{{nbsp}}
-                    {{~/each}}
-                    {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken)
-                {{~nbsp 0}});
+            {{~#if isArray}}IAsyncEnumerable<{{operation.responseModel}}>
+            {{~else}}Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
             {{~/if}}
+
+            {{~nbsp}}{{~pascalCase operationId}}
+
+            {{~#unless isArray}}Async{{/unless}}
+            
+            {{~nbsp 0}}(
+                {{~#if bodyModel}}
+                    {{~bodyModel}} {{camelCase bodyModel}},
+                    {{~nbsp~}}
+                {{~/if}}
+
+                {{~#each pathParams}}
+                    {{~paramToCLRType this}}{{nbsp}}
+                    {{~name}}
+                    {{~#unless required}} =
+                        {{~#if (exists this "default")}} {{default}}
+                        {{~else}} null
+                        {{~/if}}
+                    {{~/unless}}
+                    {{~nbsp 0}},{{nbsp}}
+                {{~/each}}
+                
+                {{~#each queryParams}} 
+                    {{~paramToCLRType this}}{{nbsp}}
+                    {{~name}}
+                    {{~#unless required}} =
+                        {{~#if (exists this "default")}} {{default}}
+                        {{~else}} null
+                        {{~/if}}
+                    {{~/unless}}
+                    {{~nbsp 0}},{{nbsp}}
+                {{~/each}}
+                {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken)
+            {{~nbsp 0}});
         
         {{~nbsp 0}}
 {{nbsp 0}}

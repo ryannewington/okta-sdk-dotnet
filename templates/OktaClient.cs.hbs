@@ -21,41 +21,45 @@ namespace Okta.Sdk
         /// <inheritdoc />
         {{nbsp 0}}
 
-            {{~#if isArray~}}
-                public IAsyncEnumerable<{{operation.responseModel}}> {{pascalCase operationId}}()
+            {{~nbsp 0}}public
 
-            {{~else~}}
-                public Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
-                {{~nbsp}}
-                {{~pascalCase operationId}}Async(
-                    {{~#if bodyModel}}
-                        {{~bodyModel}} {{camelCase bodyModel}},
-                        {{~nbsp~}}
-                    {{~/if}}
-
-                    {{~#each pathParams}}
-                        {{~paramToCLRType this}}{{nbsp}}
-                        {{~name}}
-                        {{~#unless required}} =
-                            {{~#if (exists this "default")}} {{default}}
-                            {{~else}} null
-                            {{~/if}}
-                        {{~/unless}}
-                        {{~nbsp 0}},{{nbsp}}
-                    {{~/each}}
-                    
-                    {{~#each queryParams}} 
-                        {{~paramToCLRType this}}{{nbsp}}
-                        {{~name}}
-                        {{~#unless required}} =
-                            {{~#if (exists this "default")}} {{default}}
-                            {{~else}} null
-                            {{~/if}}
-                        {{~/unless}}
-                        {{~nbsp 0}},{{nbsp}}
-                    {{~/each}}
-                    {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken))
+            {{~nbsp}}
+            {{~#if isArray}}IAsyncEnumerable<{{operation.responseModel}}>
+            {{~else}}Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
             {{~/if}}
+
+            {{~nbsp}}{{~pascalCase operationId}}
+
+            {{~#unless isArray}}Async{{/unless}}
+            
+            {{~nbsp 0}}(
+                {{~#if bodyModel}}
+                    {{~bodyModel}} {{camelCase bodyModel}},
+                    {{~nbsp~}}
+                {{~/if}}
+
+                {{~#each pathParams}}
+                    {{~paramToCLRType this}}{{nbsp}}
+                    {{~name}}
+                    {{~#unless required}} =
+                        {{~#if (exists this "default")}} {{default}}
+                        {{~else}} null
+                        {{~/if}}
+                    {{~/unless}}
+                    {{~nbsp 0}},{{nbsp}}
+                {{~/each}}
+                
+                {{~#each queryParams}} 
+                    {{~paramToCLRType this}}{{nbsp}}
+                    {{~name}}
+                    {{~#unless required}} =
+                        {{~#if (exists this "default")}} {{default}}
+                        {{~else}} null
+                        {{~/if}}
+                    {{~/unless}}
+                    {{~nbsp 0}},{{nbsp}}
+                {{~/each}}
+                {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken))
             {{~nbsp 0}}
         {
             throw new NotImplementedException();
