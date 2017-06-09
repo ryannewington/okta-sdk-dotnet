@@ -58,23 +58,70 @@ namespace Okta.Sdk
 
         public IDataStore DataStore { get; }
 
-        public UsersClient GetUsersClient => new UsersClient(this);
+        /// <inheritdoc/>
+        public UsersClient Users => new UsersClient(this);
 
-        public async Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))
+        /// <inheritdoc/>
+        public Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))
+            where T : Resource, new()
+            => GetAsync<T>(new HttpRequest { Path = href }, cancellationToken);
+
+        /// <inheritdoc/>
+        public async Task<T> GetAsync<T>(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
             where T : Resource, new()
         {
-            var response = await DataStore.GetAsync<T>(href, cancellationToken).ConfigureAwait(false);
-            return response.Payload;
+            var response = await DataStore.GetAsync<T>(request, cancellationToken).ConfigureAwait(false);
+            return response?.Payload;
         }
 
-        public async Task<TResponse> PostAsync<TResponse>(
-            string href,
-            object model,
-            CancellationToken cancellationToken = default(CancellationToken))
+        /// <inheritdoc/>
+        public Task PostAsync(string href, object model, CancellationToken cancellationToken = default(CancellationToken))
+            => PostAsync(new HttpRequest { Path = href, Payload = model }, cancellationToken);
+
+        /// <inheritdoc/>
+        public Task<TResponse> PostAsync<TResponse>(string href, object model, CancellationToken cancellationToken = default(CancellationToken))
+            where TResponse : Resource, new()
+            => PostAsync<TResponse>(new HttpRequest { Path = href, Payload = model }, cancellationToken);
+
+        /// <inheritdoc/>
+        public Task PostAsync(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
+            => PostAsync<Resource>(request, cancellationToken);
+
+        /// <inheritdoc/>
+        public async Task<TResponse> PostAsync<TResponse>(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
             where TResponse : Resource, new()
         {
-            var response = await DataStore.PostAsync<TResponse>(href, model, cancellationToken).ConfigureAwait(false);
-            return response.Payload;
+            var response = await DataStore.PostAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+            return response?.Payload;
         }
+
+        /// <inheritdoc/>
+        public Task PutAsync(string href, object model, CancellationToken cancellationToken = default(CancellationToken))
+            => PutAsync(new HttpRequest { Path = href, Payload = model }, cancellationToken);
+
+        /// <inheritdoc/>
+        public Task<TResponse> PutAsync<TResponse>(string href, object model, CancellationToken cancellationToken = default(CancellationToken))
+            where TResponse : Resource, new()
+            => PutAsync<TResponse>(new HttpRequest { Path = href, Payload = model }, cancellationToken);
+
+        /// <inheritdoc/>
+        public Task PutAsync(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
+            => PutAsync<Resource>(request, cancellationToken);
+
+        /// <inheritdoc/>
+        public async Task<TResponse> PutAsync<TResponse>(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
+            where TResponse : Resource, new()
+        {
+            var response = await DataStore.PostAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+            return response?.Payload;
+        }
+
+        /// <inheritdoc/>
+        public Task DeleteAsync(string href, CancellationToken cancellationToken = default(CancellationToken))
+            => DeleteAsync(new HttpRequest { Path = href }, cancellationToken);
+
+        /// <inheritdoc/>
+        public Task DeleteAsync(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
+            => DataStore.DeleteAsync(request, cancellationToken);
     }
 }

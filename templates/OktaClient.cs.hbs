@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
@@ -60,11 +61,32 @@ namespace Okta.Sdk
                     {{~nbsp 0}},{{nbsp}}
                 {{~/each}}
                 {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken))
-            {{~nbsp 0}}
+    {{nbsp 0}}
+            {{~#if isArray}}
+        => throw new NotImplementedException();
+            {{~else}}
+        => {{pascalCase method}}Async{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}(new HttpRequest
         {
-            throw new NotImplementedException();
-        }
-        
+            Path = "{{path}}",
+            {{#if bodyModel}}Payload = {{camelCase bodyModel}},{{/if}}
+            {{#if pathParams}}
+            PathParams = new Dictionary<string, object>()
+            {
+                {{#each pathParams}}
+                ["{{name}}"] = {{name}},
+                {{/each}}
+            },
+            {{/if}}
+            {{#if queryParams}}
+            QueryParams = new Dictionary<string, object>()
+            {
+                {{#each queryParams}}
+                ["{{name}}"] = {{name}},
+                {{/each}}
+            },
+            {{/if}}
+        }, cancellationToken);
+            {{~/if}}
         {{~nbsp 0}}
 {{nbsp 0}}
         {{~/unless}}
