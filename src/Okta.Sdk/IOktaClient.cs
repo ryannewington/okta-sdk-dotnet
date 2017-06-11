@@ -9,9 +9,11 @@ using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
-    public partial interface IOktaClient
+    public interface IOktaClient
     {
-        UsersClient Users { get; }
+        UserClient Users { get; }
+
+        GroupClient Groups { get; }
 
         Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))
             where T : Resource, new();

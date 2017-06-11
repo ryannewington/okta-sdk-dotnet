@@ -18,6 +18,13 @@ namespace Okta.Sdk
         private readonly string _orgUriWithApiPrefix;
         private readonly ILogger _logger;
 
+        protected OktaClient(OktaClient existing)
+        {
+            _configuration = existing._configuration;
+            _orgUriWithApiPrefix = existing._orgUriWithApiPrefix;
+            _logger = existing._logger;
+        }
+
         public OktaClient(ApiClientConfiguration apiClientConfiguration = null, ILogger logger = null)
         {
             // TODO: flexible configuration
@@ -62,17 +69,15 @@ namespace Okta.Sdk
                 _logger);
         }
 
-        public OktaClient(IDataStore dataStore)
-        {
-            DataStore = dataStore ?? throw new ArgumentNullException(nameof(dataStore));
-        }
-
         public IDataStore DataStore { get; }
 
         /// <inheritdoc/>
-        public UsersClient Users => new UsersClient(this);
+        public UserClient Users => new UserClient(this);
 
-        private string ToAbsoluteUri(string path)
+        /// <inheritdoc/>
+        public GroupClient Groups => new GroupClient(this);
+
+        protected string ToAbsoluteUri(string path)
         {
             if (path.StartsWith("http://") || path.StartsWith("https://"))
             {

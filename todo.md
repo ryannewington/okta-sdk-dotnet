@@ -1,8 +1,7 @@
 # v1.0 todo
 
 * Create UserClient, etc. from tags
-* Write collection-returning methods
-* Handle initial query string args in collection enumerator
+* Check with Java - UserClient or UsersClient?
 * Add methods to models
 * Consider moving internal stuff to a new namespace
 * Update generator version

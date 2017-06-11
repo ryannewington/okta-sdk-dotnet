@@ -1,4 +1,4 @@
-// <copyright file="OktaClient.Generated.cs" company="Okta, Inc">
+// <copyright file="IClient.Generated.cs" company="Okta, Inc">
 // Copyright (c) 2014-2017 Okta, Inc. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
@@ -6,25 +6,33 @@
 // Do not modify this file directly. This file was automatically generated with:
 // spec.json - {{spec.info.version}}
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk
 {
-    public partial class OktaClient
+    public partial interface I{{tag}}Client : IOktaClient
     {
         {{~#each operations as |operation|}}
         {{~#unless hidden}}
         {{~nbsp 0}}
-        /// <inheritdoc />
+        /// <summary>
+        /// {{description}}
+        /// </summary>
+        {{#if bodyModel}}
+        /// <param name="{{camelCase bodyModel}}">The resource.</param>
+        {{/if}}
+        {{#each pathParams}}
+        /// <param name="{{name}}">{{description}}</param>
+        {{/each}}
+        {{#each queryParams}}
+        /// <param name="{{name}}">{{description}}</param>
+        {{/each}}
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         {{nbsp 0}}
 
-            {{~nbsp 0}}public
-
-            {{~nbsp}}
             {{~#if isArray}}IAsyncEnumerable<{{operation.responseModel}}>
             {{~else}}Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
             {{~/if}}
@@ -60,53 +68,9 @@ namespace Okta.Sdk
                     {{~/unless}}
                     {{~nbsp 0}},{{nbsp}}
                 {{~/each}}
-                {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken))
-    {{nbsp 0}}
-            {{~#if isArray}}
-        => new CollectionClient<{{operation.responseModel}}>(DataStore, new HttpRequest
-        {
-            Uri = ToAbsoluteUri("{{path}}"),
-            {{#if bodyModel}}Payload = {{camelCase bodyModel}},{{/if}}
-            {{#if pathParams}}
-            PathParams = new Dictionary<string, object>()
-            {
-                {{#each pathParams}}
-                ["{{name}}"] = {{name}},
-                {{/each}}
-            },
-            {{/if}}
-            {{#if queryParams}}
-            QueryParams = new Dictionary<string, object>()
-            {
-                {{#each queryParams}}
-                ["{{name}}"] = {{name}},
-                {{/each}}
-            },
-            {{/if}}
-        });
-            {{~else}}
-        => {{pascalCase method}}Async{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}(new HttpRequest
-        {
-            Uri = ToAbsoluteUri("{{path}}"),
-            {{#if bodyModel}}Payload = {{camelCase bodyModel}},{{/if}}
-            {{#if pathParams}}
-            PathParams = new Dictionary<string, object>()
-            {
-                {{#each pathParams}}
-                ["{{name}}"] = {{name}},
-                {{/each}}
-            },
-            {{/if}}
-            {{#if queryParams}}
-            QueryParams = new Dictionary<string, object>()
-            {
-                {{#each queryParams}}
-                ["{{name}}"] = {{name}},
-                {{/each}}
-            },
-            {{/if}}
-        }, cancellationToken);
-            {{~/if}}
+                {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken)
+            {{~nbsp 0}});
+        
         {{~nbsp 0}}
 {{nbsp 0}}
         {{~/unless}}

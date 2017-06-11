@@ -129,32 +129,57 @@ csharp.process = ({spec, operations, models, handlebars}) => {
     });
   }
 
-  // pre-process the operations
+  const taggedOperations = {};
+
+  // pre-process the operations and split into tags
   for (let operation of operations) {
       if (operationSkipList.has(operation.operationId)) {
         console.log('Skipping operation', operation.operationId);
         operation.hidden = true;
         continue;
       }
-  }
-  
-  templates.push({
-    src: 'IOktaClient.cs.hbs',
-    dest: `Generated/IOktaClient.Generated.cs`,
-    context: {
-      spec,
-      operations
-    }
-  });
 
-  templates.push({
-    src: 'OktaClient.cs.hbs',
-    dest: `Generated/OktaClient.Generated.cs`,
-    context: {
-      spec,
-      operations
-    }
-  });
+      if (!operation.tags) {
+        operation.tags = [];
+      }
+
+      if (operation.tags.length === 0) {
+        operation.tags.push('Okta');
+        console.log(`Adding default tag to ${operation.operationId}`);
+      }
+
+      if (operation.tags.length > 1) {
+        console.log(`Warning: more than one tag on ${operation.operationId}`);
+      }
+
+      if (!taggedOperations[operation.tags[0]]) {
+        taggedOperations[operation.tags[0]] = []; 
+      }
+
+      taggedOperations[operation.tags[0]].push(operation);
+  }
+
+  for (let tag of Object.keys(taggedOperations)) {
+    templates.push({
+      src: 'IClient.cs.hbs',
+      dest: `Generated/I${tag}Client.Generated.cs`,
+      context: {
+        tag,
+        spec,
+        operations: taggedOperations[tag]
+      }
+    });
+
+    templates.push({
+      src: 'Client.cs.hbs',
+      dest: `Generated/${tag}Client.Generated.cs`,
+      context: {
+        tag,
+        spec,
+        operations: taggedOperations[tag]
+      }
+    });
+  }
 
   return templates;
 }
