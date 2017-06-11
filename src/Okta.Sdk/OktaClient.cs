@@ -14,6 +14,8 @@ namespace Okta.Sdk
 {
     public partial class OktaClient : IOktaClient
     {
+        private readonly ApiClientConfiguration _configuration;
+        private readonly string _orgUriWithApiPrefix;
         private readonly ILogger _logger;
 
         public OktaClient(ApiClientConfiguration apiClientConfiguration = null, ILogger logger = null)
@@ -42,6 +44,15 @@ namespace Okta.Sdk
 
             // TODO: for now, just doing dumb configuration
 
+            // TODO: validate configuration
+            _configuration = apiClientConfiguration;
+
+            _orgUriWithApiPrefix = _configuration.OrgUrl;
+            if (_configuration.OrgUrl.EndsWith("/"))
+            {
+                _orgUriWithApiPrefix.TrimEnd('/');
+            }
+
             _logger = logger ?? NullLogger.Instance;
 
             // TODO pass proxy, connectionTimeout, etc
@@ -60,6 +71,20 @@ namespace Okta.Sdk
 
         /// <inheritdoc/>
         public UsersClient Users => new UsersClient(this);
+
+        private string ToAbsoluteUri(string path)
+        {
+            if (path.StartsWith("http://") || path.StartsWith("https://"))
+            {
+                return path;
+            }
+
+            var pathWithLeadingSlash = path.StartsWith("/")
+                ? path
+                : $"/{path}";
+
+            return $"{_orgUriWithApiPrefix}{pathWithLeadingSlash}";
+        }
 
         /// <inheritdoc/>
         public Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
+using Okta.Sdk.Abstractions;
 using Xunit;
 
 namespace Okta.Sdk.UnitTests
@@ -33,7 +34,7 @@ namespace Okta.Sdk.UnitTests
                 NullLogger.Instance);
 
             var collection = new CollectionClient<User>(
-                dataStore, "http://mock-collection.dev", null);
+                dataStore, new HttpRequest { Uri = "http://mock-collection.dev" });
 
             var count = await collection.Count();
         }
@@ -48,7 +49,7 @@ namespace Okta.Sdk.UnitTests
                 NullLogger.Instance);
 
             var collection = new CollectionClient<User>(
-                dataStore, "http://mock-collection.dev", null);
+                dataStore, new HttpRequest { Uri = "http://mock-collection.dev" });
 
             var activeUsers = await collection.Where(x => x.Status == "ACTIVE").ToList();
             activeUsers.Count.Should().Be(2);

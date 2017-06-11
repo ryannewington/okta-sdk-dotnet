@@ -63,11 +63,31 @@ namespace Okta.Sdk
                 {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken))
     {{nbsp 0}}
             {{~#if isArray}}
-        => throw new NotImplementedException();
+        => new CollectionClient<{{operation.responseModel}}>(DataStore, new HttpRequest
+        {
+            Uri = ToAbsoluteUri("{{path}}"),
+            {{#if bodyModel}}Payload = {{camelCase bodyModel}},{{/if}}
+            {{#if pathParams}}
+            PathParams = new Dictionary<string, object>()
+            {
+                {{#each pathParams}}
+                ["{{name}}"] = {{name}},
+                {{/each}}
+            },
+            {{/if}}
+            {{#if queryParams}}
+            QueryParams = new Dictionary<string, object>()
+            {
+                {{#each queryParams}}
+                ["{{name}}"] = {{name}},
+                {{/each}}
+            },
+            {{/if}}
+        });
             {{~else}}
         => {{pascalCase method}}Async{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}(new HttpRequest
         {
-            Path = "{{path}}",
+            Uri = ToAbsoluteUri("{{path}}"),
             {{#if bodyModel}}Payload = {{camelCase bodyModel}},{{/if}}
             {{#if pathParams}}
             PathParams = new Dictionary<string, object>()
