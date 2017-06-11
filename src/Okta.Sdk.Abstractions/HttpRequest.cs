@@ -4,17 +4,20 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Okta.Sdk.Abstractions
 {
     public class HttpRequest
     {
-        public string Path { get; set; }
+        public string Uri { get; set; }
 
         public object Payload { get; set; }
 
         public IEnumerable<KeyValuePair<string, object>> QueryParams { get; set; }
+            = Enumerable.Empty<KeyValuePair<string, object>>();
 
         public IEnumerable<KeyValuePair<string, object>> PathParams { get; set; }
+            = Enumerable.Empty<KeyValuePair<string, object>>();
     }
 }

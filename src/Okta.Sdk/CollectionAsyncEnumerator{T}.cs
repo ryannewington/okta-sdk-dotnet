@@ -54,7 +54,11 @@ namespace Okta.Sdk
                 return false;
             }
 
-            var nextPage = await _dataStore.GetArrayAsync<T>(_nextUri, cancellationToken).ConfigureAwait(false);
+            var request = new HttpRequest { Uri = _nextUri }; // TODO handle query
+
+            var nextPage = await _dataStore.GetArrayAsync<T>(
+                request,
+                cancellationToken).ConfigureAwait(false);
 
             _initialized = true;
 

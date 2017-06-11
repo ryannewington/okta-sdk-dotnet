@@ -64,7 +64,7 @@ namespace Okta.Sdk
         /// <inheritdoc/>
         public Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))
             where T : Resource, new()
-            => GetAsync<T>(new HttpRequest { Path = href }, cancellationToken);
+            => GetAsync<T>(new HttpRequest { Uri = href }, cancellationToken);
 
         /// <inheritdoc/>
         public async Task<T> GetAsync<T>(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
@@ -76,12 +76,12 @@ namespace Okta.Sdk
 
         /// <inheritdoc/>
         public Task PostAsync(string href, object model, CancellationToken cancellationToken = default(CancellationToken))
-            => PostAsync(new HttpRequest { Path = href, Payload = model }, cancellationToken);
+            => PostAsync(new HttpRequest { Uri = href, Payload = model }, cancellationToken);
 
         /// <inheritdoc/>
         public Task<TResponse> PostAsync<TResponse>(string href, object model, CancellationToken cancellationToken = default(CancellationToken))
             where TResponse : Resource, new()
-            => PostAsync<TResponse>(new HttpRequest { Path = href, Payload = model }, cancellationToken);
+            => PostAsync<TResponse>(new HttpRequest { Uri = href, Payload = model }, cancellationToken);
 
         /// <inheritdoc/>
         public Task PostAsync(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
@@ -97,12 +97,12 @@ namespace Okta.Sdk
 
         /// <inheritdoc/>
         public Task PutAsync(string href, object model, CancellationToken cancellationToken = default(CancellationToken))
-            => PutAsync(new HttpRequest { Path = href, Payload = model }, cancellationToken);
+            => PutAsync(new HttpRequest { Uri = href, Payload = model }, cancellationToken);
 
         /// <inheritdoc/>
         public Task<TResponse> PutAsync<TResponse>(string href, object model, CancellationToken cancellationToken = default(CancellationToken))
             where TResponse : Resource, new()
-            => PutAsync<TResponse>(new HttpRequest { Path = href, Payload = model }, cancellationToken);
+            => PutAsync<TResponse>(new HttpRequest { Uri = href, Payload = model }, cancellationToken);
 
         /// <inheritdoc/>
         public Task PutAsync(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
@@ -118,7 +118,7 @@ namespace Okta.Sdk
 
         /// <inheritdoc/>
         public Task DeleteAsync(string href, CancellationToken cancellationToken = default(CancellationToken))
-            => DeleteAsync(new HttpRequest { Path = href }, cancellationToken);
+            => DeleteAsync(new HttpRequest { Uri = href }, cancellationToken);
 
         /// <inheritdoc/>
         public Task DeleteAsync(HttpRequest request, CancellationToken cancellationToken = default(CancellationToken))
