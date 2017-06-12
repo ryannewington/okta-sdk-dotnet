@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -16,10 +15,12 @@ namespace Okta.Sdk
     {
         private static readonly TypeInfo ResourceTypeInfo = typeof(Resource).GetTypeInfo();
 
+        private readonly IDataStore _dataStore;
         private readonly ILogger _logger;
 
-        public ResourceFactory(ILogger logger = null)
+        public ResourceFactory(IDataStore dataStore = null, ILogger logger = null)
         {
+            _dataStore = dataStore;
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -44,7 +45,7 @@ namespace Okta.Sdk
             }
 
             var resource = Activator.CreateInstance<T>() as Resource;
-            resource.Initialize(this, data, _logger);
+            resource.Initialize(_dataStore, this, data, _logger);
             return (T)(object)resource;
         }
 
@@ -57,7 +58,7 @@ namespace Okta.Sdk
 
             var resource = Activator.CreateInstance<T>() as Resource;
             var dictionary = NewDictionary(resource.DictionaryType, data);
-            resource.Initialize(this, dictionary, _logger);
+            resource.Initialize(_dataStore, this, dictionary, _logger);
             return (T)(object)resource;
         }
     }

@@ -37,5 +37,65 @@ namespace Okta.Sdk
         {{/unless}}
 
         {{/each}}
+
+        {{~#each methods as |method|}}
+        {{~#unless hidden}}
+        {{~nbsp 0}}
+        /// <inheritdoc />
+        {{nbsp 0}}
+
+            {{~nbsp 0}}public
+
+            {{~nbsp}}
+            {{~#if isArray}}IAsyncEnumerable<{{operation.responseModel}}>
+            {{~else}}Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
+            {{~/if}}
+
+            {{~nbsp}}{{~pascalCase alias}}
+
+            {{~#unless operation.isArray}}Async{{/unless}}
+            
+            {{~nbsp 0}}(
+            {{~#each operation.pathParams}}
+                {{~#unless (getMappedArgName method name)}}
+                {{~paramToCLRType this}}{{nbsp}}
+                {{~name}}
+                {{~#unless required}} =
+                    {{~#if (exists this "default")}} {{default}}
+                    {{~else}} null
+                    {{~/if}}
+                {{~/unless}}
+                {{~nbsp 0}},{{nbsp}}
+                {{~/unless}}
+            {{~/each}}
+            
+            {{~#each operation.queryParams}}
+                {{~#unless (getMappedArgName method name)}}
+                {{~paramToCLRType this}}{{nbsp}}
+                {{~name}}
+                {{~#unless required}} =
+                    {{~#if (exists this "default")}} {{default}}
+                    {{~else}} null
+                    {{~/if}}
+                {{~/unless}}
+                {{~nbsp 0}},{{nbsp}}
+                {{~/unless}}
+            {{~/each}}
+            {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken))
+            {{nbsp 0}}
+            {{~nbsp 0}}=> new {{operation.tags.[0]}}Client(GetDataStore()).{{pascalCase operation.operationId}}
+            {{~#unless operation.isArray }}Async{{/unless}}
+            {{~nbsp 0}}(
+                {{~#if operation.bodyModel}}this, {{/if}}
+                {{~#each operation.pathParams}}
+                    {{~#if (getMappedArgName method name)}}{{pascalCase (getMappedArgName method name)}}
+                    {{~else}}{{name}}
+                    {{~/if}}, {{nbsp 0}}
+                {{~/each}}
+                cancellationToken);
+        {{~nbsp 0}}
+{{nbsp 0}}
+        {{~/unless}}
+        {{~/each}}
     }
 }

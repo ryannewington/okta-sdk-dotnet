@@ -14,15 +14,13 @@ namespace Okta.Sdk
 {
     public partial class OktaClient : IOktaClient
     {
-        private readonly ApiClientConfiguration _configuration;
-        private readonly string _orgUriWithApiPrefix;
-        private readonly ILogger _logger;
+        // todo remove
+        //private readonly ApiClientConfiguration _configuration;
+        //private readonly ILogger _logger;
 
-        protected OktaClient(OktaClient existing)
+        protected OktaClient(IDataStore dataStore)
         {
-            _configuration = existing._configuration;
-            _orgUriWithApiPrefix = existing._orgUriWithApiPrefix;
-            _logger = existing._logger;
+            DataStore = dataStore;
         }
 
         public OktaClient(ApiClientConfiguration apiClientConfiguration = null, ILogger logger = null)
@@ -49,47 +47,25 @@ namespace Okta.Sdk
 
             //var config = configBuilder.Build();
 
-            // TODO: for now, just doing dumb configuration
-
             // TODO: validate configuration
-            _configuration = apiClientConfiguration;
 
-            _orgUriWithApiPrefix = _configuration.OrgUrl;
-            if (_configuration.OrgUrl.EndsWith("/"))
-            {
-                _orgUriWithApiPrefix.TrimEnd('/');
-            }
+            //_configuration = apiClientConfiguration;
 
-            _logger = logger ?? NullLogger.Instance;
+            //_logger = logger ?? NullLogger.Instance;
 
             // TODO pass proxy, connectionTimeout, etc
-            DataStore = new DefaultDataStore(
-                new DefaultRequestExecutor(apiClientConfiguration.OrgUrl, apiClientConfiguration.Token, _logger),
-                new DefaultSerializer(),
-                _logger);
+            var requestExecutor = new DefaultRequestExecutor(apiClientConfiguration.OrgUrl, apiClientConfiguration.Token, logger);
+
+            DataStore = new DefaultDataStore(requestExecutor, new DefaultSerializer(), logger);
         }
 
         public IDataStore DataStore { get; }
 
         /// <inheritdoc/>
-        public UserClient Users => new UserClient(this);
+        public UserClient Users => new UserClient(DataStore);
 
         /// <inheritdoc/>
-        public GroupClient Groups => new GroupClient(this);
-
-        protected string ToAbsoluteUri(string path)
-        {
-            if (path.StartsWith("http://") || path.StartsWith("https://"))
-            {
-                return path;
-            }
-
-            var pathWithLeadingSlash = path.StartsWith("/")
-                ? path
-                : $"/{path}";
-
-            return $"{_orgUriWithApiPrefix}{pathWithLeadingSlash}";
-        }
+        public GroupClient Groups => new GroupClient(DataStore);
 
         /// <inheritdoc/>
         public Task<T> GetAsync<T>(string href, CancellationToken cancellationToken = default(CancellationToken))

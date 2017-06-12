@@ -74,6 +74,12 @@ function exists(obj, key) {
   return obj && obj.hasOwnProperty(key);
 }
 
+function getMappedArgName(method, argName) {
+  let mapping = method.arguments.find(x => x.dest === argName);
+  if (!mapping) return null;
+  return mapping.src;
+}
+
 csharp.process = ({spec, operations, models, handlebars}) => {
 
   handlebars.registerHelper({
@@ -81,7 +87,8 @@ csharp.process = ({spec, operations, models, handlebars}) => {
     propToCLRType,
     getterName,
     exists,
-    nbsp
+    nbsp,
+    getMappedArgName
   });
 
   const templates = [];

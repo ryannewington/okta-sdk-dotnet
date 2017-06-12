@@ -22,8 +22,8 @@ namespace Okta.Sdk
         {
         }
 
-        public {{tag}}Client(OktaClient existing)
-            : base(existing)
+        public {{tag}}Client(IDataStore dataStore)
+            : base(dataStore)
         {
         }
         {{nbsp 0}}
@@ -76,7 +76,7 @@ namespace Okta.Sdk
             {{~#if isArray}}
         => new CollectionClient<{{operation.responseModel}}>(DataStore, new HttpRequest
         {
-            Uri = ToAbsoluteUri("{{path}}"),
+            Uri = "{{path}}",
             {{#if bodyModel}}Payload = {{camelCase bodyModel}},{{/if}}
             {{#if pathParams}}
             PathParams = new Dictionary<string, object>()
@@ -98,7 +98,7 @@ namespace Okta.Sdk
             {{~else}}
         => {{pascalCase method}}Async{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}(new HttpRequest
         {
-            Uri = ToAbsoluteUri("{{path}}"),
+            Uri = "{{path}}",
             {{#if bodyModel}}Payload = {{camelCase bodyModel}},{{/if}}
             {{#if pathParams}}
             PathParams = new Dictionary<string, object>()

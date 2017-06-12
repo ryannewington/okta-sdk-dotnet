@@ -15,6 +15,7 @@ namespace Okta.Sdk
     {
         private static readonly TypeInfo ResourceTypeInfo = typeof(Resource).GetTypeInfo();
 
+        private IDataStore _dataStore;
         private ResourceFactory _resourceFactory;
         private readonly ResourceDictionaryType _dictionaryType;
         private ILogger _logger;
@@ -28,16 +29,26 @@ namespace Okta.Sdk
         public Resource(ResourceDictionaryType dictionaryType)
         {
             _dictionaryType = dictionaryType;
-            Initialize(null, null, null);
+            Initialize(null, null, null, null);
         }
 
         internal ResourceDictionaryType DictionaryType => _dictionaryType;
 
-        internal void Initialize(ResourceFactory resourceFactory, IDictionary<string, object> data, ILogger logger)
+        internal void Initialize(
+            IDataStore dataStore,
+            ResourceFactory resourceFactory,
+            IDictionary<string, object> data,
+            ILogger logger)
         {
-            _resourceFactory = resourceFactory ?? new ResourceFactory();
+            _dataStore = dataStore;
+            _resourceFactory = resourceFactory ?? new ResourceFactory(dataStore, logger);
             _data = data ?? _resourceFactory.NewDictionary(_dictionaryType, null);
             _logger = logger ?? NullLogger.Instance;
+        }
+
+        protected IDataStore GetDataStore()
+        {
+            return _dataStore ?? throw new InvalidOperationException("Only resources retrieved or saved through a Client object can call server-side methods.");
         }
 
         public IDictionary<string, object> GetModifiedData()
