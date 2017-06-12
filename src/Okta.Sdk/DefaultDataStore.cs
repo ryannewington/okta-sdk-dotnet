@@ -19,7 +19,6 @@ namespace Okta.Sdk
         private readonly ISerializer _serializer;
         private readonly ILogger _logger;
         private readonly ResourceFactory _resourceFactory;
-        private readonly string _fullyQualifiedOrgUri;
 
         public DefaultDataStore(
             IRequestExecutor requestExecutor,
@@ -28,40 +27,13 @@ namespace Okta.Sdk
         {
             _requestExecutor = requestExecutor ?? throw new ArgumentNullException(nameof(requestExecutor));
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-            _resourceFactory = new ResourceFactory(this, _logger);
+            _resourceFactory = new ResourceFactory(this, logger);
+            _logger = logger;
         }
 
         public IRequestExecutor RequestExecutor => _requestExecutor;
 
         public ISerializer Serializer => _serializer;
-
-        private void EnsureResponseSuccess(HttpResponse<string> response)
-        {
-            if (response == null)
-            {
-                throw new InvalidOperationException("The response from the RequestExecutor was null.");
-            }
-
-            if (response.StatusCode != 200)
-            {
-                IDictionary<string, object> errorData = null;
-
-                try
-                {
-                    errorData = _serializer.Deserialize(PayloadOrEmpty(response));
-                    if (errorData == null)
-                    {
-                        throw new Exception("The error data was null.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException($"An error occurred deserializing the error body for response code {response.StatusCode}. See the inner exception for details.", ex);
-                }
-
-                throw new OktaApiException(response.StatusCode, _resourceFactory.CreateNew<Resource>(errorData));
-            }
-        }
 
         private static HttpResponse<T> CreateResourceResponse<T>(HttpResponse<string> response, T resource)
             => new HttpResponse<T>
@@ -89,6 +61,34 @@ namespace Okta.Sdk
             if (request.QueryParams == null)
             {
                 request.QueryParams = Enumerable.Empty<KeyValuePair<string, object>>();
+            }
+        }
+
+        private void EnsureResponseSuccess(HttpResponse<string> response)
+        {
+            if (response == null)
+            {
+                throw new InvalidOperationException("The response from the RequestExecutor was null.");
+            }
+
+            if (response.StatusCode != 200)
+            {
+                IDictionary<string, object> errorData = null;
+
+                try
+                {
+                    errorData = _serializer.Deserialize(PayloadOrEmpty(response));
+                    if (errorData == null)
+                    {
+                        throw new Exception("The error data was null.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"An error occurred deserializing the error body for response code {response.StatusCode}. See the inner exception for details.", ex);
+                }
+
+                throw new OktaApiException(response.StatusCode, _resourceFactory.CreateNew<Resource>(errorData));
             }
         }
 

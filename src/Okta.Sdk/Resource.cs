@@ -15,9 +15,9 @@ namespace Okta.Sdk
     {
         private static readonly TypeInfo ResourceTypeInfo = typeof(Resource).GetTypeInfo();
 
+        private readonly ResourceDictionaryType _dictionaryType;
         private IDataStore _dataStore;
         private ResourceFactory _resourceFactory;
-        private readonly ResourceDictionaryType _dictionaryType;
         private ILogger _logger;
         private IDictionary<string, object> _data;
 
