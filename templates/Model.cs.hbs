@@ -20,9 +20,8 @@ namespace Okta.Sdk
             : base(ResourceDictionaryType.ChangeTracking)
         {
         }
-
         {{/if}}
-        {{~nbsp 0}}
+
         {{~#each properties}}
         {{~#unless hidden}}
         {{#if readOnly}}
@@ -47,7 +46,7 @@ namespace Okta.Sdk
             {{~nbsp 0}}public
 
             {{~nbsp}}
-            {{~#if isArray}}IAsyncEnumerable<{{operation.responseModel}}>
+            {{~#if operation.isArray}}IAsyncEnumerable<{{operation.responseModel}}>
             {{~else}}Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
             {{~/if}}
 
@@ -83,16 +82,18 @@ namespace Okta.Sdk
             {{~/each}}
             {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken))
             {{nbsp 0}}
-            {{~nbsp 0}}=> new {{operation.tags.[0]}}Client(GetDataStore()).{{pascalCase operation.operationId}}
-            {{~#unless operation.isArray }}Async{{/unless}}
+            {{~nbsp 0}}=> new {{pascalCase operation.tags.[0]}}Client(GetDataStore()).{{pascalCase operation.operationId}}
+            {{~#unless operation.isArray}}Async{{/unless}}
             {{~nbsp 0}}(
                 {{~#if operation.bodyModel}}this, {{/if}}
-                {{~#each operation.pathParams}}
+                {{~#each operation.allParams}}
                     {{~#if (getMappedArgName method name)}}{{pascalCase (getMappedArgName method name)}}
                     {{~else}}{{name}}
-                    {{~/if}}, {{nbsp 0}}
+                    {{~/if}}
+                    {{~#unless @last}},{{nbsp}}{{/unless}}
                 {{~/each}}
-                cancellationToken);
+                {{~#unless operation.isArray}}, cancellationToken{{/unless}}
+                {{~nbsp 0}});
         {{~nbsp 0}}
 {{nbsp 0}}
         {{~/unless}}

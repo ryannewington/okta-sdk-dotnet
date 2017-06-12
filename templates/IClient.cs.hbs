@@ -21,7 +21,7 @@ namespace Okta.Sdk
         /// {{description}}
         /// </summary>
         {{#if bodyModel}}
-        /// <param name="{{camelCase bodyModel}}">The resource.</param>
+        /// <param name="{{camelCase bodyModel}}">The {{bodyModel}} resource.</param>
         {{/if}}
         {{#each pathParams}}
         /// <param name="{{name}}">{{description}}</param>
@@ -35,19 +35,18 @@ namespace Okta.Sdk
 
             {{~#if isArray}}IAsyncEnumerable<{{operation.responseModel}}>
             {{~else}}Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
-            {{~/if}}
+            {{~/if}}{{nbsp}}
 
-            {{~nbsp}}{{~pascalCase operationId}}
+            {{~pascalCase operationId}}
 
             {{~#unless isArray}}Async{{/unless}}
             
             {{~nbsp 0}}(
                 {{~#if bodyModel}}
-                    {{~bodyModel}} {{camelCase bodyModel}},
-                    {{~nbsp~}}
+                    {{~bodyModel}} {{camelCase bodyModel}},{{nbsp}}
                 {{~/if}}
 
-                {{~#each pathParams}}
+                {{~#each allParams}}
                     {{~paramToCLRType this}}{{nbsp}}
                     {{~name}}
                     {{~#unless required}} =
@@ -55,20 +54,12 @@ namespace Okta.Sdk
                         {{~else}} null
                         {{~/if}}
                     {{~/unless}}
-                    {{~nbsp 0}},{{nbsp}}
+                    {{~#unless @last}},{{nbsp}}{{/unless}}
                 {{~/each}}
-                
-                {{~#each queryParams}} 
-                    {{~paramToCLRType this}}{{nbsp}}
-                    {{~name}}
-                    {{~#unless required}} =
-                        {{~#if (exists this "default")}} {{default}}
-                        {{~else}} null
-                        {{~/if}}
-                    {{~/unless}}
-                    {{~nbsp 0}},{{nbsp}}
-                {{~/each}}
-                {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken)
+                {{~#unless isArray}}
+                    {{~#if allParams.length}},{{nbsp}}{{/if}}
+                    {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken)
+                {{~/unless}}
             {{~nbsp 0}});
         
         {{~nbsp 0}}

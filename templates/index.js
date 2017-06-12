@@ -27,6 +27,13 @@ const propertyRenameList = {
 const operationSkipList = new Set([
 ]);
 
+const modelMethodSkipList = [
+  { path: 'User.changePassword', reason: 'Implemented as a custom method' },
+  { path: 'User.changeRecoveryQuestion', reason: 'Implemented as a custom method'},
+  { path: 'User.forgotPasswordWithRecoveryAnswer', reason: 'Implemented as a custom method'},
+  { path: 'User.assignRoleToUser', reason: 'Implemented as a custom method'},
+];
+
 const getType = (specType) => {
   switch(specType) {
     case 'boolean': return 'bool?';
@@ -129,6 +136,19 @@ csharp.process = ({spec, operations, models, handlebars}) => {
       }
     }
 
+    for (let method of model.methods) {
+      let fullPath = `${model.modelName}.${method.alias}`;
+
+      let skipRule = modelMethodSkipList.find(x => x.path === fullPath);
+      if (skipRule) {
+        console.log('Skipping model method', fullPath, `(Reason: ${skipRule.reason})`);
+        method.hidden = true;
+        continue;
+      }
+
+      method.operation.allParams = (method.operation.pathParams || []).concat(method.operation.queryParams || []);
+    }
+
     templates.push({
       src: 'Model.cs.hbs',
       dest: `Generated/${model.modelName}.Generated.cs`,
@@ -145,6 +165,8 @@ csharp.process = ({spec, operations, models, handlebars}) => {
         operation.hidden = true;
         continue;
       }
+
+      operation.allParams = (operation.pathParams || []).concat(operation.queryParams || []);
 
       if (!operation.tags) {
         operation.tags = [];
