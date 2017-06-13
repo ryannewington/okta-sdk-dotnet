@@ -11,21 +11,20 @@ const partialUpdateList = new Set([
   'UserProfile'
 ]);
 
-const propertySkipList = new Set([
-  'FactorDevice.links',
-  'Link.hints',
-  'User._links',
-  'UserGroup._embedded',
-  'UserGroup._links',
-  'UserGroupStats._links'
-]);
+const propertySkipList = [
+  { path: 'FactorDevice.links', reason: 'Not currently supported' },
+  { path: 'Link.hints', reason: 'Not currently supported' },
+  { path: 'User._links', reason: 'Not currently supported' },
+  { path: 'UserGroup._embedded', reason: 'Not currently supported' },
+  { path: 'UserGroup._links', reason: 'Not currently supported' },
+  { path: 'UserGroupStats._links', reason: 'Not currently supported' },
+];
 
-const propertyRenameList = {
-  'ActivationToken.activationToken': 'token'
-};
+const propertyRenameList = [
+  { path: 'ActivationToken.activationToken', new: 'token', reason: '.NET type name and member name cannot be identical' }
+];
 
-const operationSkipList = new Set([
-]);
+const operationSkipList = [];
 
 const modelMethodSkipList = [
   { path: 'User.changePassword', reason: 'Implemented as a custom method' },
@@ -122,17 +121,18 @@ csharp.process = ({spec, operations, models, handlebars}) => {
         property.hidden = true;
         continue;
       }
-      
-      if (propertySkipList.has(fullPath)) {
-        console.log('Skipping property', fullPath);
+
+      let skipRule = propertySkipList.find(x => x.path === fullPath);
+      if (skipRule) {
+        console.log('Skipping property', fullPath, `(Reason: ${skipRule.reason})`);
         property.hidden = true;
         continue;
       }
 
-      if (propertyRenameList.hasOwnProperty(fullPath)) {
-        let newName = propertyRenameList[fullPath];
-        console.log(`Renaming property ${fullPath} to ${newName}`);
-        property.displayName = newName;
+      let renameRule = propertyRenameList.find(x => x.path === fullPath);
+      if (renameRule) {
+        console.log(`Renaming property ${fullPath} to ${renameRule.new}`, `(Reason: ${renameRule.reason})`);
+        property.displayName = renameRule.new;
       }
     }
 
@@ -160,8 +160,9 @@ csharp.process = ({spec, operations, models, handlebars}) => {
 
   // pre-process the operations and split into tags
   for (let operation of operations) {
-      if (operationSkipList.has(operation.operationId)) {
-        console.log('Skipping operation', operation.operationId);
+      let skipRule = operationSkipList.find(x => x.id === operation.operationId);
+      if (skipRule) {
+        console.log('Skipping operation', operation.operationId, `(Reason: ${skipRule.reason})`);
         operation.hidden = true;
         continue;
       }
