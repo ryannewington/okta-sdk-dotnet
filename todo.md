@@ -1,5 +1,6 @@
 # v1.0 todo
 
+* Generate model interfaces
 * Handle crud methods?
 * Consider moving internal stuff to a new namespace
 * Update generator to public version
