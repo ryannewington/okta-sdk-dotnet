@@ -46,11 +46,6 @@ function paramToCLRType(param) {
   return getType(param.type);
 }
 
-function nbsp(times) {
-  if (typeof times !== 'number')times = 1;
-  return ' '.repeat(times);
-}
-
 function propToCLRType(prop) {
   switch (prop.commonType) {
     case 'array': return `IList<${getType(prop.model)}>`;
@@ -76,10 +71,6 @@ function getterName(prop) {
   }
 }
 
-function exists(obj, key) {
-  return obj && obj.hasOwnProperty(key);
-}
-
 function getMappedArgName(method, argName) {
   let mapping = method.arguments.find(x => x.dest === argName);
   if (!mapping) return null;
@@ -92,8 +83,6 @@ csharp.process = ({spec, operations, models, handlebars}) => {
     paramToCLRType,
     propToCLRType,
     getterName,
-    exists,
-    nbsp,
     getMappedArgName
   });
 
