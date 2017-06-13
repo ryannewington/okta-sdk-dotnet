@@ -9,7 +9,7 @@ using System.Net;
 using System.Text;
 using Okta.Sdk.Abstractions;
 
-namespace Okta.Sdk
+namespace Okta.Sdk.Internal
 {
     public static class UrlFormatter
     {

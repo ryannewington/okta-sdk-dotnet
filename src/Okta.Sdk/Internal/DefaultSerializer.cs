@@ -8,7 +8,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Okta.Sdk.Abstractions;
 
-namespace Okta.Sdk
+namespace Okta.Sdk.Internal
 {
     public sealed class DefaultSerializer : ISerializer
     {

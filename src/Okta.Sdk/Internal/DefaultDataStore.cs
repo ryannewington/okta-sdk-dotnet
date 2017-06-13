@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Okta.Sdk.Abstractions;
 
-namespace Okta.Sdk
+namespace Okta.Sdk.Internal
 {
     public sealed class DefaultDataStore : IDataStore
     {
