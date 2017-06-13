@@ -94,7 +94,7 @@ namespace Okta.Sdk
 
             if (typeof(T) == typeof(int?))
             {
-                return (T)(object)GetIntProperty(key);
+                return (T)(object)GetIntegerProperty(key);
             }
 
             if (typeof(T) == typeof(long?))
@@ -123,7 +123,7 @@ namespace Okta.Sdk
                 return default(T);
             }
 
-            throw new NotImplementedException(); // tpdo
+            throw new NotImplementedException(); // todo
         }
 
         private object GetPropertyOrNull(string key)
@@ -160,7 +160,7 @@ namespace Okta.Sdk
             return bool.Parse(raw);
         }
 
-        protected int? GetIntProperty(string key)
+        protected int? GetIntegerProperty(string key)
         {
             var raw = GetStringProperty(key);
             if (raw == null)

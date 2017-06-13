@@ -139,6 +139,12 @@ csharp.process = ({spec, operations, models, handlebars}) => {
     }
 
     templates.push({
+      src: 'IModel.cs.hbs',
+      dest: `Generated/I${model.modelName}.Generated.cs`,
+      context: model
+    });
+
+    templates.push({
       src: 'Model.cs.hbs',
       dest: `Generated/${model.modelName}.Generated.cs`,
       context: model

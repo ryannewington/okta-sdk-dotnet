@@ -1,4 +1,4 @@
-// <copyright file="{{modelName}}.Generated.cs" company="Okta, Inc">
+// <copyright file="I{{modelName}}.Generated.cs" company="Okta, Inc">
 // Copyright (c) 2014-2017 Okta, Inc. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
@@ -13,25 +13,13 @@ using System.Threading.Tasks;
 
 namespace Okta.Sdk
 {
-    public sealed partial class {{modelName}} : Resource, I{{modelName}}
+    public partial interface I{{modelName}}
     {
-        {{#if supportsPartialUpdates}}
-        public {{modelName}}()
-            : base(ResourceDictionaryType.ChangeTracking)
-        {
-        }
-        {{/if}}
-
         {{~#each properties}}
         {{~#unless hidden}}
-        public {{{propToCLRType this}}} {{pascalCase (or displayName propertyName)}}
-        {{~#if readOnly}} => {{{getterName this}}}("{{propertyName}}");
-        {{~else}}
-{{nbsp 0}}
-        {
-            get => {{{getterName this}}}("{{propertyName}}");
-            set => this["{{propertyName}}"] = value;
-        }
+        {{{propToCLRType this}}} {{pascalCase (or displayName propertyName)}}
+        {{~#if readOnly}} { get; }
+        {{~else}} { get; set; }
         {{~/if}}
 {{nbsp 0}}
 {{nbsp 0}}
@@ -40,14 +28,8 @@ namespace Okta.Sdk
         {{/each}}
 
         {{~#each methods as |method|}}
-        {{~#unless hidden}}
-        {{~nbsp 0}}
-        /// <inheritdoc />
+            {{~#unless hidden}}
         {{nbsp 0}}
-
-            {{~nbsp 0}}public
-
-            {{~nbsp}}
             {{~#if operation.isArray}}IAsyncEnumerable<{{operation.responseModel}}>
             {{~else}}Task{{#if operation.responseModel}}<{{operation.responseModel}}>{{/if}}
             {{~/if}}
@@ -82,23 +64,10 @@ namespace Okta.Sdk
                 {{~nbsp 0}},{{nbsp}}
                 {{~/unless}}
             {{~/each}}
-            {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken))
-            {{nbsp 0}}
-            {{~nbsp 0}}=> new {{pascalCase operation.tags.[0]}}Client(GetDataStore()).{{pascalCase operation.operationId}}
-            {{~#unless operation.isArray}}Async{{/unless}}
-            {{~nbsp 0}}(
-                {{~#if operation.bodyModel}}this, {{/if}}
-                {{~#each operation.allParams}}
-                    {{~#if (getMappedArgName method name)}}{{pascalCase (getMappedArgName method name)}}
-                    {{~else}}{{name}}
-                    {{~/if}}
-                    {{~#unless @last}},{{nbsp}}{{/unless}}
-                {{~/each}}
-                {{~#unless operation.isArray}}, cancellationToken{{/unless}}
-                {{~nbsp 0}});
-        {{~nbsp 0}}
+            {{~nbsp 0}}CancellationToken cancellationToken = default(CancellationToken));
 {{nbsp 0}}
-        {{~/unless}}
+{{nbsp 0}}
+            {{~/unless}}
         {{~/each}}
     }
 }
