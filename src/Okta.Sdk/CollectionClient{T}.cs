@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using Okta.Sdk.Abstractions;
 using Okta.Sdk.Internal;
 
 namespace Okta.Sdk

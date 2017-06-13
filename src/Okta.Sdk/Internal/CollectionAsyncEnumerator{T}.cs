@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk.Internal
 {

@@ -7,7 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Okta.Sdk.Abstractions;
 
 namespace Okta.Sdk.Internal
 {
