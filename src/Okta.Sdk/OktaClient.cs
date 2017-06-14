@@ -3,8 +3,10 @@
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Okta.Sdk.Configuration;
 using Okta.Sdk.Internal;
@@ -22,35 +24,29 @@ namespace Okta.Sdk
             DataStore = dataStore;
         }
 
-        public OktaClient(ApiClientConfiguration apiClientConfiguration = null, ILogger logger = null)
+        public OktaClient(ClientConfiguration apiClientConfiguration = null, ILogger logger = null)
         {
             // TODO: flexible configuration
 
-            //string configurationFileRoot = null; // TODO find the application root directory at runtime?
+            string configurationFileRoot = null; // TODO find the application root directory at runtime?
 
-            //var homeOktaJsonLocation = HomePath.Resolve("~", ".okta", "okta.json");
-            //var homeOktaYamlLocation = HomePath.Resolve("~", ".okta", "okta.yaml");
+            var homeOktaJsonLocation = Path.Combine(HomePath.GetPath(), ".okta", "okta.json");
+            var homeOktaYamlLocation = Path.Combine(HomePath.GetPath(), ".okta", "okta.yaml");
 
-            //var applicationAppSettingsLocation = Path.Combine(configurationFileRoot ?? string.Empty, "appsettings.json");
-            //var applicationOktaJsonLocation = Path.Combine(configurationFileRoot ?? string.Empty, "okta.json");
-            //var applicationOktaYamlLocation = Path.Combine(configurationFileRoot ?? string.Empty, "okta.yaml");
+            var applicationOktaJsonLocation = Path.Combine(configurationFileRoot ?? string.Empty, "okta.json");
+            var applicationOktaYamlLocation = Path.Combine(configurationFileRoot ?? string.Empty, "okta.yaml");
 
-            //var configBuilder = new ConfigurationBuilder()
-            //    .AddYamlFile(homeOktaYamlLocation, optional: true, root: "okta")
-            //    .AddJsonFile(homeOktaJsonLocation, optional: true, root: "okta")
-            //    .AddJsonFile(applicationAppSettingsLocation, optional: true)
-            //    .AddYamlFile(applicationOktaYamlLocation, optional: true, root: "okta")
-            //    .AddJsonFile(applicationOktaJsonLocation, optional: true, root: "okta")
-            //    .AddEnvironmentVariables("okta", "_", root: "okta")
-            //    .AddObject(apiClientConfiguration, root: "okta");
+            var configBuilder = new ConfigurationBuilder()
+                //.AddYamlFile(homeOktaYamlLocation, optional: true)
+                .AddJsonFile(homeOktaJsonLocation, optional: true)
+                //.AddYamlFile(applicationOktaYamlLocation, optional: true)
+                .AddJsonFile(applicationOktaJsonLocation, optional: true)
+                .AddEnvironmentVariables("OKTA")
+                .AddObject(apiClientConfiguration, root: "okta");
 
-            //var config = configBuilder.Build();
+            var config = configBuilder.Build();
 
-            // TODO: validate configuration
-
-            //_configuration = apiClientConfiguration;
-
-            //_logger = logger ?? NullLogger.Instance;
+            ConfigurationValidator.Validate(config);
 
             // TODO pass proxy, connectionTimeout, etc
             var requestExecutor = new DefaultRequestExecutor(apiClientConfiguration.OrgUrl, apiClientConfiguration.Token, logger);

@@ -16,7 +16,7 @@ namespace Okta.Sdk.IntegrationTests
         private static IOktaClient CreateClient(string token = null)
         {
             // TODO get these values from configuration
-            return new OktaClient(new ApiClientConfiguration
+            return new OktaClient(new ClientConfiguration
             {
                 OrgUrl = "https://dev-341607.oktapreview.com",
                 Token = token ?? "00w6Z6oZSqdPX243H5XUPj0svMGbJonU20-Rjnatqe",
@@ -30,7 +30,7 @@ namespace Okta.Sdk.IntegrationTests
 
             Assert.Throws<ArgumentNullException>(() =>
             {
-                client = new OktaClient(new ApiClientConfiguration
+                client = new OktaClient(new ClientConfiguration
                 {
                     OrgUrl = null,
                     Token = "foobar",
@@ -45,7 +45,7 @@ namespace Okta.Sdk.IntegrationTests
 
             Assert.Throws<ArgumentException>(() =>
             {
-                client = new OktaClient(new ApiClientConfiguration
+                client = new OktaClient(new ClientConfiguration
                 {
                     // Must start with https://
                     OrgUrl = "http://insecure.dev",
@@ -61,7 +61,7 @@ namespace Okta.Sdk.IntegrationTests
 
             Assert.Throws<ArgumentNullException>(() =>
             {
-                client = new OktaClient(new ApiClientConfiguration
+                client = new OktaClient(new ClientConfiguration
                 {
                     OrgUrl = "https://dev-12345.oktapreview.com",
                     Token = null,
