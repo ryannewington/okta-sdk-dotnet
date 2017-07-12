@@ -50,8 +50,8 @@ fi
 ###########################################################################
 
 if [ ! -f "$CAKE_EXE" ]; then
-    echo "Installing cake using dotnet restore"
-    dotnet restore "$TOOLS_DIR/packages.csproj" --packages .   
+    echo "Installing cake to $TOOLS_DIR using dotnet restore"
+    dotnet restore "$SCRIPT_DIR/CakeTools.csproj" --packages $TOOLS_DIR
 fi
 
 # Make sure that Cake has been installed.
