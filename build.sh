@@ -63,9 +63,12 @@ if [ ! -f "$CAKE_EXE" ]; then
     exit 1
 fi
 
+echo "Cake installed!"
+
 ###########################################################################
 # RUN BUILD SCRIPT
 ###########################################################################
 
 # Start Cake
+echo "Running cake with script $SCRIPT"
 exec dotnet "$CAKE_EXE" "$SCRIPT" --verbosity=$VERBOSITY --configuration=$CONFIGURATION --target=$TARGET $DRYRUN "${SCRIPT_ARGUMENTS[@]}"
