@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Cake.CoreCLR" Version="0.20.0" />
+  </ItemGroup>
+</Project>

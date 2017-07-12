@@ -9,8 +9,7 @@
 # Define directories.
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 TOOLS_DIR=$SCRIPT_DIR/tools
-CAKE_VERSION=0.20.0
-CAKE_EXE=$TOOLS_DIR/Cake/$CAKE_VERSION/Cake.dll
+CAKE_EXE=$TOOLS_DIR/cake.coreclr/0.20.0/Cake.dll
 
 # Define md5sum or md5 depending on Linux/OSX
 MD5_EXE=
@@ -51,7 +50,7 @@ fi
 
 if [ ! -f "$CAKE_EXE" ]; then
     echo "Installing cake using dotnet restore"
-    exec dotnet restore "$TOOLS_DIR" --packages "$TOOLS_DIR"
+    exec dotnet restore "$TOOLS_DIR/project.csproj" --packages .
     if [ $? -ne 0 ]; then
         echo "An error occured while installing Cake."
         exit 1
