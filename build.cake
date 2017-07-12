@@ -97,8 +97,14 @@ Task("CopyDocsToVersionedDirectories")
 .Does(() =>
 {
     Console.WriteLine("Copying docs to docs/built/latest");
-    DeleteDirectory("./docs/built/latest", recursive: true);
-    CopyDirectory("./docs/OktaSdkDocumentation/Output", "./docs/built/latest");
+
+    if (DirectoryExists("./docs/built/latest"))
+    {
+        DeleteDirectory("./docs/built/latest", recursive: true);
+    }
+    
+    EnsureDirectoryExists("./docs/built");
+    CopyDirectory("./docs/OktaSdkDocumentation/Output/", "./docs/built/latest/");
 
     var travisTag = EnvironmentVariable("TRAVIS_TAG");
     if (string.IsNullOrEmpty(travisTag))
@@ -107,7 +113,8 @@ Task("CopyDocsToVersionedDirectories")
         return;
     }
 
-    var tagDocsDirectory = string.Format("./docs/built/{0}", travisTag);
+    var taggedVersion = travisTag.TrimStart('v');
+    var tagDocsDirectory = string.Format("./docs/built/{0}", taggedVersion);
     Console.WriteLine("Copying docs to " + tagDocsDirectory);
     CopyDirectory("./docs/OktaSdkDocumentation/Output", tagDocsDirectory);
 });
