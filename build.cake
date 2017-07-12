@@ -92,9 +92,18 @@ Task("CleanDocsOutput")
         .ForEach(filename => DeleteFile(string.Format("./docs/OktaSdkDocumentation/Output/{0}", filename)));
 });
 
+Task("CopyDocsToVersionedDirectories")
+.IsDependentOn("CleanDocsOutput")
+.Does(() =>
+{
+    throw new NotImplementedException();
+});
+
 Task("Docs")
+    .IsDependentOn("Build")
     .IsDependentOn("BuildDocs")
-    .IsDependentOn("CleanDocsOutput");
+    .IsDependentOn("CleanDocsOutput")
+    .IsDependentOn("CopyDocsToVersionedDirectories");
 
 Task("Default")
     .IsDependentOn("Clean")
