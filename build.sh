@@ -9,7 +9,8 @@
 # Define directories.
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 TOOLS_DIR=$SCRIPT_DIR/tools
-CAKE_EXE=$TOOLS_DIR/cake.coreclr/0.20.0/Cake.dll
+CAKE_VERSION=0.20.0
+CAKE_EXE=$TOOLS_DIR/cake.coreclr/$CAKE_VERSION/Cake.dll
 
 # Define md5sum or md5 depending on Linux/OSX
 MD5_EXE=
@@ -55,7 +56,7 @@ fi
 
 # Make sure that Cake has been installed.
 if [ ! -f "$CAKE_EXE" ]; then
-    echo "Could not find Cake.exe at '$CAKE_EXE'."
+    echo "Could not find Cake at '$CAKE_EXE'."
     exit 1
 fi
 
