@@ -50,12 +50,7 @@ fi
 
 if [ ! -f "$CAKE_EXE" ]; then
     echo "Installing cake using dotnet restore"
-    exec dotnet restore "$TOOLS_DIR/packages.csproj" --packages .
-    if [ $? -ne 0 ]; then
-        echo "An error occured while installing Cake."
-        exit 1
-    fi
-    echo "Cake installed!"
+    exec dotnet restore "$TOOLS_DIR/packages.csproj" --packages .   
 fi
 
 # Make sure that Cake has been installed.
@@ -63,6 +58,8 @@ if [ ! -f "$CAKE_EXE" ]; then
     echo "Could not find Cake.exe at '$CAKE_EXE'."
     exit 1
 fi
+
+echo "Cake installed!"
 
 ###########################################################################
 # RUN BUILD SCRIPT
