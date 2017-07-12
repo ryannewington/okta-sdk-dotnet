@@ -67,6 +67,7 @@ Task("BuildDocs")
 .Does(() =>
 {
     MSBuild("./docs/OktaSdkDocumentation.sln", new MSBuildSettings {
+        Configuration = configuration,
         Verbosity = Verbosity.Minimal
     });
 });
@@ -91,6 +92,10 @@ Task("CleanDocsOutput")
         .ForEach(filename => DeleteFile(string.Format("./docs/OktaSdkDocumentation/Output/{0}", filename)));
 });
 
+Task("Docs")
+    .IsDependentOn("BuildDocs")
+    .IsDependentOn("CleanDocsOutput");
+
 Task("Default")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
@@ -98,9 +103,6 @@ Task("Default")
     .IsDependentOn("Test")
     .IsDependentOn("Pack");
 
-Task("Docs")
-    .IsDependentOn("BuildDocs")
-    .IsDependentOn("CleanDocsOutput");
 
 // Default task
 var target = Argument("target", "Default");
