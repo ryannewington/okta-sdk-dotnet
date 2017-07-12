@@ -55,6 +55,7 @@ if [ ! -f "$CAKE_EXE" ]; then
         echo "An error occured while installing Cake."
         exit 1
     fi
+    echo "Cake installed!"
 fi
 
 # Make sure that Cake has been installed.
@@ -63,12 +64,9 @@ if [ ! -f "$CAKE_EXE" ]; then
     exit 1
 fi
 
-echo "Cake installed!"
-
 ###########################################################################
 # RUN BUILD SCRIPT
 ###########################################################################
 
 # Start Cake
-echo "Running cake with script $SCRIPT"
 exec dotnet "$CAKE_EXE" "$SCRIPT" --verbosity=$VERBOSITY --configuration=$CONFIGURATION --target=$TARGET $DRYRUN "${SCRIPT_ARGUMENTS[@]}"
