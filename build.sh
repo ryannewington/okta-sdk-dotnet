@@ -50,7 +50,7 @@ fi
 
 if [ ! -f "$CAKE_EXE" ]; then
     echo "Installing cake using dotnet restore"
-    exec dotnet restore "$TOOLS_DIR/packages.csproj" --packages .   
+    dotnet restore "$TOOLS_DIR/packages.csproj" --packages .   
 fi
 
 # Make sure that Cake has been installed.
@@ -66,4 +66,4 @@ echo "Cake installed!"
 ###########################################################################
 
 # Start Cake
-exec dotnet "$CAKE_EXE" "$SCRIPT" --verbosity=$VERBOSITY --configuration=$CONFIGURATION --target=$TARGET $DRYRUN "${SCRIPT_ARGUMENTS[@]}"
+dotnet "$CAKE_EXE" "$SCRIPT" --verbosity=$VERBOSITY --configuration=$CONFIGURATION --target=$TARGET $DRYRUN "${SCRIPT_ARGUMENTS[@]}"
