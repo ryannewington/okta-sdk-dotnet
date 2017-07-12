@@ -50,7 +50,7 @@ fi
 
 if [ ! -f "$CAKE_EXE" ]; then
     echo "Installing cake using dotnet restore"
-    exec dotnet restore "$TOOLS_DIR/project.csproj" --packages .
+    exec dotnet restore "$TOOLS_DIR/packages.csproj" --packages .
     if [ $? -ne 0 ]; then
         echo "An error occured while installing Cake."
         exit 1
