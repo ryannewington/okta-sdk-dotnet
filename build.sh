@@ -10,7 +10,6 @@
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 TOOLS_DIR=$SCRIPT_DIR/tools
 CAKE_VERSION=0.20.0
-CAKE_FEED=https://www.myget.org/F/cake/api/v3/index.json
 CAKE_EXE=$TOOLS_DIR/Cake/$CAKE_VERSION/Cake.dll
 
 # Define md5sum or md5 depending on Linux/OSX
@@ -51,7 +50,8 @@ fi
 ###########################################################################
 
 if [ ! -f "$CAKE_EXE" ]; then
-    exec dotnet restore "$TOOLS_DIR" --packages "$TOOLS_DIR" -f "$CAKE_FEED"
+    echo "Installing cake using dotnet restore"
+    exec dotnet restore "$TOOLS_DIR" --packages "$TOOLS_DIR"
     if [ $? -ne 0 ]; then
         echo "An error occured while installing Cake."
         exit 1
