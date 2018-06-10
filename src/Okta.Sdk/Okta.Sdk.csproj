@@ -32,5 +32,7 @@
     <Authors>Okta, Inc.</Authors>
     <PackageTags>okta api authentication identity management</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/okta/okta-sdk-dotnet/master/icon.png</PackageIconUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 </Project>
