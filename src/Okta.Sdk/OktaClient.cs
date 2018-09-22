@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FlexibleConfiguration;
@@ -46,7 +47,7 @@ namespace Okta.Sdk
         public OktaClient(OktaClientConfiguration apiClientConfiguration = null, ILogger logger = null)
         {
             Configuration = GetConfigurationOrDefault(apiClientConfiguration);
-            ThrowIfInvalidConfiguration(Configuration);
+            OktaClientConfigurationValidator.Validate(Configuration);
 
             logger = logger ?? NullLogger.Instance;
 
@@ -76,7 +77,7 @@ namespace Okta.Sdk
         public OktaClient(OktaClientConfiguration apiClientConfiguration, HttpClient httpClient, ILogger logger = null)
         {
             Configuration = GetConfigurationOrDefault(apiClientConfiguration);
-            ThrowIfInvalidConfiguration(Configuration);
+            OktaClientConfigurationValidator.Validate(Configuration);
 
             logger = logger ?? NullLogger.Instance;
 
@@ -117,10 +118,14 @@ namespace Okta.Sdk
                 .AddJsonFile(applicationAppSettingsLocation, optional: true)
                 .AddYamlFile(applicationOktaYamlLocation, optional: true)
                 .AddEnvironmentVariables("okta", "_", root: "okta")
-                .AddObject(apiClientConfiguration, root: "okta:client");
+                .AddEnvironmentVariables("okta_testing", "_", root: "okta")
+                .AddObject(apiClientConfiguration, root: "okta:client")
+                .AddObject(apiClientConfiguration, root: "okta:testing")
+                .AddObject(apiClientConfiguration);
 
             var compiledConfig = new OktaClientConfiguration();
             configBuilder.Build().GetSection("okta").GetSection("client").Bind(compiledConfig);
+            configBuilder.Build().GetSection("okta").GetSection("testing").Bind(compiledConfig);
 
             return compiledConfig;
         }
@@ -132,19 +137,6 @@ namespace Okta.Sdk
         public IOktaClient CreatedScoped(RequestContext requestContext)
             => new OktaClient(_dataStore, Configuration, requestContext);
 
-        private static void ThrowIfInvalidConfiguration(OktaClientConfiguration configuration)
-        {
-            if (string.IsNullOrEmpty(configuration.OrgUrl))
-            {
-                throw new ArgumentNullException(nameof(configuration.OrgUrl), "You must supply an Okta Org URL, like https://dev-12345.oktapreview.com");
-            }
-
-            if (string.IsNullOrEmpty(configuration.Token))
-            {
-                throw new ArgumentNullException(nameof(configuration.Token), "You must supply an Okta API token. You can create one in the Okta developer dashboard.");
-            }
-        }
-
         /// <inheritdoc/>
         public IUsersClient Users => new UsersClient(_dataStore, Configuration, _requestContext);
 
@@ -154,6 +146,15 @@ namespace Okta.Sdk
         /// <inheritdoc/>
         public IGroupsClient Groups => new GroupsClient(_dataStore, Configuration, _requestContext);
 
+        /// <inheritdoc/>
+        public IApplicationsClient Applications => new ApplicationsClient(_dataStore, Configuration, _requestContext);
+
+        /// <inheritdoc/>
+        public ISessionsClient Sessions => new SessionsClient(_dataStore, Configuration, _requestContext);
+
+        /// <inheritdoc/>
+        public ILogsClient Logs => new LogsClient(_dataStore, Configuration, _requestContext);
+
         /// <summary>
         /// Creates a new <see cref="CollectionClient{T}"/> given an initial HTTP request.
         /// </summary>
@@ -161,7 +162,7 @@ namespace Okta.Sdk
         /// <param name="initialRequest">The initial HTTP request.</param>
         /// <returns>The collection client.</returns>
         protected CollectionClient<T> GetCollectionClient<T>(HttpRequest initialRequest)
-            where T : Resource, new()
+            where T : IResource
             => new CollectionClient<T>(_dataStore, initialRequest, _requestContext);
 
         /// <inheritdoc/>
@@ -178,16 +179,16 @@ namespace Okta.Sdk
         }
 
         /// <inheritdoc/>
-        public IAsyncEnumerable<T> GetCollection<T>(string href)
-            where T : Resource, new()
+        public CollectionClient<T> GetCollection<T>(string href)
+            where T : IResource
             => GetCollection<T>(new HttpRequest
             {
                 Uri = href,
             });
 
         /// <inheritdoc/>
-        public IAsyncEnumerable<T> GetCollection<T>(HttpRequest request)
-            where T : Resource, new()
+        public CollectionClient<T> GetCollection<T>(HttpRequest request)
+            where T : IResource
             => GetCollectionClient<T>(request);
 
         /// <inheritdoc/>

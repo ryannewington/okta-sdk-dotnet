@@ -27,12 +27,13 @@ namespace Okta.Sdk.Internal
         /// Initializes a new instance of the <see cref="CastingListAdapter{T}"/> class.
         /// </summary>
         /// <param name="genericList">The generic list to wrap.</param>
+        /// <param name="resourceFactory">The resource factory</param>
         /// <param name="logger">The logging interface.</param>
         public CastingListAdapter(IList<object> genericList, ResourceFactory resourceFactory, ILogger logger)
         {
-            _genericList = genericList;
-            _resourceFactory = resourceFactory;
             _targetTypeInfo = typeof(T).GetTypeInfo();
+            _resourceFactory = resourceFactory;
+            _genericList = genericList;
             _logger = logger;
         }
 
@@ -45,9 +46,20 @@ namespace Okta.Sdk.Internal
                 return _resourceFactory.CreateFromExistingData<T>(nestedData);
             }
 
+            var isStringEnum = StringEnum.TypeInfo.IsAssignableFrom(_targetTypeInfo);
+            if (isStringEnum)
+            {
+                return StringEnum.Create<T>(item?.ToString());
+            }
+
             // Fall back to primitive conversion
             try
             {
+                if (!(item is IConvertible))
+                {
+                    return (T)item;
+                }
+
                 return (T)Convert.ChangeType(item, typeof(T));
             }
             catch (InvalidCastException ice)
@@ -77,7 +89,13 @@ namespace Okta.Sdk.Internal
         public void Clear() => _genericList.Clear();
 
         /// <inheritdoc />
-        public bool Contains(T item) => _genericList.Contains(item);
+        public bool Contains(T item)
+        {
+            var casted = _genericList
+                .Select(Cast)
+                .ToArray();
+            return casted.Contains(item);
+        }
 
         /// <inheritdoc />
         public void CopyTo(T[] array, int arrayIndex)

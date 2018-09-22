@@ -15,10 +15,8 @@ namespace Okta.Sdk
     /// <inheritdoc/>
     public class Resource : IResource
     {
-        internal static readonly TypeInfo ResourceTypeInfo = typeof(Resource).GetTypeInfo();
-        internal static readonly TypeInfo StringEnumTypeInfo = typeof(StringEnum).GetTypeInfo();
+        internal static readonly TypeInfo ResourceTypeInfo = typeof(IResource).GetTypeInfo();
 
-        private readonly ResourceBehavior _dictionaryType;
         private IOktaClient _client;
         private ResourceFactory _resourceFactory;
         private ILogger _logger;
@@ -27,23 +25,10 @@ namespace Okta.Sdk
         /// <summary>
         /// Initializes a new instance of the <see cref="Resource"/> class.
         /// </summary>
-        /// <remarks>Uses the default dictionary type (non-change tracking).</remarks>
         public Resource()
-            : this(ResourceBehavior.Default)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Resource"/> class.
-        /// </summary>
-        /// <param name="dictionaryType">The dictionary type to use.</param>
-        public Resource(ResourceBehavior dictionaryType)
-        {
-            _dictionaryType = dictionaryType;
             Initialize(null, null, null, null);
         }
-
-        internal ResourceBehavior DictionaryType => _dictionaryType;
 
         internal void Initialize(
             IOktaClient client,
@@ -53,7 +38,7 @@ namespace Okta.Sdk
         {
             _client = client;
             _resourceFactory = resourceFactory ?? new ResourceFactory(client, logger);
-            _data = data ?? _resourceFactory.NewDictionary(_dictionaryType, null);
+            _data = data ?? _resourceFactory.NewDictionary(null);
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -68,18 +53,7 @@ namespace Okta.Sdk
 
         /// <inheritdoc/>
         public IDictionary<string, object> GetData()
-            => _resourceFactory.NewDictionary(_dictionaryType, _data);
-
-        /// <inheritdoc/>
-        public IDictionary<string, object> GetModifiedData()
-        {
-            if (_data is DefaultChangeTrackingDictionary changeTrackingDictionary)
-            {
-                return (IDictionary<string, object>)changeTrackingDictionary.Difference;
-            }
-
-            return GetData();
-        }
+            => _resourceFactory.NewDictionary(_data);
 
         /// <inheritdoc/>
         public object this[string name]
@@ -98,7 +72,7 @@ namespace Okta.Sdk
                 return GetResourcePropertyInternal<T>(name);
             }
 
-            if (StringEnumTypeInfo.IsAssignableFrom(typeInfo))
+            if (StringEnum.TypeInfo.IsAssignableFrom(typeInfo))
             {
                 return GetEnumPropertyInternal<T>(name);
             }
@@ -128,6 +102,11 @@ namespace Okta.Sdk
                 return (T)(object)GetLongProperty(name);
             }
 
+            if (typeof(T) == typeof(double?))
+            {
+                return (T)(object)GetDoubleProperty(name);
+            }
+
             if (typeof(T) == typeof(DateTimeOffset?))
             {
                 return (T)(object)GetDateTimeProperty(name);
@@ -153,7 +132,20 @@ namespace Okta.Sdk
             return value;
         }
 
-        internal void SetProperty(string name, object value)
+        private object GetPropertyOrEmptyCollection(string key)
+        {
+            _data.TryGetValue(key, out var value);
+
+            if (value == null)
+            {
+                _data[key] = new List<object>();
+            }
+
+            return _data[key];
+        }
+
+        /// <inheritdoc/>
+        public void SetProperty(string name, object value)
         {
             switch (value)
             {
@@ -233,6 +225,24 @@ namespace Okta.Sdk
         }
 
         /// <summary>
+        /// Gets a <see cref="double"/> property from the resource by name.
+        /// </summary>
+        /// <param name="name">The property name.</param>
+        /// <returns>The property value as a <see cref="double"/>, or <c>null</c>.</returns>
+        /// <exception cref="FormatException">The value is not in the correct format.</exception>
+        /// <exception cref="OverflowException">The value represents a number less than <see cref="double.MinValue"/> or greater than <see cref="double.MaxValue"/>.</exception>
+        protected double? GetDoubleProperty(string name)
+        {
+            var raw = GetStringProperty(name);
+            if (raw == null)
+            {
+                return null;
+            }
+
+            return double.Parse(raw);
+        }
+
+        /// <summary>
         /// Gets a datetime property from the resource by name.
         /// </summary>
         /// <param name="name">The property name.</param>
@@ -256,11 +266,7 @@ namespace Okta.Sdk
         /// <inheritdoc/>
         public IList<T> GetArrayProperty<T>(string name)
         {
-            var genericList = GetPropertyOrNull(name) as IList<object>;
-            if (genericList == null)
-            {
-                return null;
-            }
+            var genericList = GetPropertyOrEmptyCollection(name) as IList<object>;
 
             return new CastingListAdapter<T>(genericList, _resourceFactory, _logger);
         }

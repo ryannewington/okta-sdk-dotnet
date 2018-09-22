@@ -29,8 +29,8 @@ namespace Okta.Sdk
         }
         
         /// <inheritdoc />
-        public IAsyncEnumerable<IUser> ListUsers(string q = null, string after = null, int? limit = -1, string filter = null, string format = null, string search = null, string expand = null)
-            => GetCollectionClient<User>(new HttpRequest
+        public ICollectionClient<IUser> ListUsers(string q = null, string after = null, int? limit = -1, string filter = null, string format = null, string search = null, string expand = null)
+            => GetCollectionClient<IUser>(new HttpRequest
             {
                 Uri = "/api/v1/users",
                 
@@ -47,7 +47,7 @@ namespace Okta.Sdk
             });
                     
         /// <inheritdoc />
-        public async Task<IUser> CreateUserAsync(IUser user, bool? activate = true, bool? provider = false, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IUser> CreateUserAsync(IUser user, bool? activate = true, bool? provider = false, UserNextLogin nextLogin = null, CancellationToken cancellationToken = default(CancellationToken))
             => await PostAsync<User>(new HttpRequest
             {
                 Uri = "/api/v1/users",
@@ -56,6 +56,7 @@ namespace Okta.Sdk
                 {
                     ["activate"] = activate,
                     ["provider"] = provider,
+                    ["nextLogin"] = nextLogin,
                 },
                 }, cancellationToken).ConfigureAwait(false);
         
@@ -96,8 +97,8 @@ namespace Okta.Sdk
                 }, cancellationToken).ConfigureAwait(false);
         
         /// <inheritdoc />
-        public IAsyncEnumerable<IAppLink> ListAppLinks(string userId, bool? showAll = false)
-            => GetCollectionClient<AppLink>(new HttpRequest
+        public ICollectionClient<IAppLink> ListAppLinks(string userId, bool? showAll = false)
+            => GetCollectionClient<IAppLink>(new HttpRequest
             {
                 Uri = "/api/v1/users/{userId}/appLinks",
                 
@@ -136,8 +137,8 @@ namespace Okta.Sdk
                 }, cancellationToken).ConfigureAwait(false);
         
         /// <inheritdoc />
-        public IAsyncEnumerable<IGroup> ListUserGroups(string userId, string after = null, int? limit = -1)
-            => GetCollectionClient<Group>(new HttpRequest
+        public ICollectionClient<IGroup> ListUserGroups(string userId, string after = null, int? limit = -1)
+            => GetCollectionClient<IGroup>(new HttpRequest
             {
                 Uri = "/api/v1/users/{userId}/groups",
                 
@@ -262,8 +263,8 @@ namespace Okta.Sdk
                 }, cancellationToken).ConfigureAwait(false);
         
         /// <inheritdoc />
-        public IAsyncEnumerable<IRole> ListAssignedRoles(string userId, string expand = null)
-            => GetCollectionClient<Role>(new HttpRequest
+        public ICollectionClient<IRole> ListAssignedRoles(string userId, string expand = null)
+            => GetCollectionClient<IRole>(new HttpRequest
             {
                 Uri = "/api/v1/users/{userId}/roles",
                 
@@ -291,8 +292,8 @@ namespace Okta.Sdk
                 }, cancellationToken).ConfigureAwait(false);
         
         /// <inheritdoc />
-        public IAsyncEnumerable<IGroup> ListGroupTargetsForRole(string userId, string roleId, string after = null, int? limit = -1)
-            => GetCollectionClient<Group>(new HttpRequest
+        public ICollectionClient<IGroup> ListGroupTargetsForRole(string userId, string roleId, string after = null, int? limit = -1)
+            => GetCollectionClient<IGroup>(new HttpRequest
             {
                 Uri = "/api/v1/users/{userId}/roles/{roleId}/targets/groups",
                 
@@ -333,6 +334,22 @@ namespace Okta.Sdk
                     ["userId"] = userId,
                     ["roleId"] = roleId,
                     ["groupId"] = groupId,
+                },
+                }, cancellationToken).ConfigureAwait(false);
+        
+        /// <inheritdoc />
+        public async Task EndAllUserSessionsAsync(string userId, bool? oauthTokens = false, CancellationToken cancellationToken = default(CancellationToken))
+            => await DeleteAsync(new HttpRequest
+            {
+                Uri = "/api/v1/users/{userId}/sessions",
+                
+                PathParameters = new Dictionary<string, object>()
+                {
+                    ["userId"] = userId,
+                },
+                QueryParameters = new Dictionary<string, object>()
+                {
+                    ["oauthTokens"] = oauthTokens,
                 },
                 }, cancellationToken).ConfigureAwait(false);
         

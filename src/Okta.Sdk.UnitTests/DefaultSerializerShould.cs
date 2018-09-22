@@ -96,5 +96,84 @@ namespace Okta.Sdk.UnitTests
 
             json.Should().Be("{\"foo\":\"bar\"}");
         }
+
+        [Fact]
+        public void SerializeEnum()
+        {
+            var serializer = new DefaultSerializer();
+
+            var json = serializer.Serialize(new { test = FactorStatus.Active });
+
+            json.Should().Be("{\"test\":\"ACTIVE\"}");
+        }
+
+        [Fact]
+        public void SerializeEmptyEnum()
+        {
+            var serializer = new DefaultSerializer();
+
+            var json = serializer.Serialize(new { test = new FactorStatus(string.Empty) });
+
+            json.Should().Be("{\"test\":\"\"}");
+        }
+
+        [Fact]
+        public void SerializeNullEnum()
+        {
+            var serializer = new DefaultSerializer();
+
+            var json = serializer.Serialize(new { test = new FactorStatus(null) });
+
+            json.Should().Be("{\"test\":\"\"}");
+        }
+
+        [Fact]
+        public void SerializeObjectAndPreserveCase()
+        {
+            var serializer = new DefaultSerializer();
+
+            var json = serializer.Serialize(new { Foo = "bar" });
+
+            json.Should().Be("{\"Foo\":\"bar\"}");
+        }
+
+        [Fact]
+        public void SerializeResource()
+        {
+            var serializer = new DefaultSerializer();
+            var user = new User
+            {
+                Credentials = new UserCredentials
+                {
+                    Password = new PasswordCredential
+                    {
+                        Value = "secret",
+                    },
+                },
+            };
+
+            var json = serializer.Serialize(user);
+
+            json.Should().Be("{\"credentials\":{\"password\":{\"value\":\"secret\"}}}");
+        }
+
+        [Fact]
+        public void SerializeResourceWithCustomProperties()
+        {
+            var serializer = new DefaultSerializer();
+            var profile = new UserProfile
+            {
+                FirstName = "Foo",
+            };
+            profile["Custom"] = "Bar";
+            var user = new User
+            {
+                Profile = profile,
+            };
+
+            var json = serializer.Serialize(user);
+
+            json.Should().Be("{\"profile\":{\"firstName\":\"Foo\",\"Custom\":\"Bar\"}}");
+        }
     }
 }

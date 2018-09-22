@@ -1,4 +1,4 @@
-// <copyright file="OktaClientShould.cs" company="Okta, Inc">
+﻿// <copyright file="OktaClientShould.cs" company="Okta, Inc">
 // Copyright (c) 2014 - present Okta, Inc. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 // </copyright>
@@ -13,39 +13,30 @@ namespace Okta.Sdk.IntegrationTests
 {
     public class OktaClientShould
     {
-        private static IOktaClient CreateClient()
-        {
-            // Client settings are expected to be in environment variables on the test machine.
-            return new OktaClient();
-        }
-
         [Fact]
-        public void ThrowForNullOrgUrl()
+        public void ThrowForNullOktaDomain()
         {
-            IOktaClient client;
-
             Assert.Throws<ArgumentNullException>(() =>
             {
-                client = new OktaClient(new OktaClientConfiguration
+                var client = new OktaClient(new OktaClientConfiguration
                 {
-                    OrgUrl = string.Empty,
+                    OktaDomain = string.Empty,
                     Token = "foobar",
                 });
             });
         }
 
         [Fact]
-        public void ThrowForInvalidOrgUrl()
+        public void ThrowForInvalidOktaDomain()
         {
-            IOktaClient client;
-
             Assert.Throws<ArgumentException>(() =>
             {
-                client = new OktaClient(new OktaClientConfiguration
+                var client = new OktaClient(new OktaClientConfiguration
                 {
                     // Must start with https://
-                    OrgUrl = "http://insecure.dev",
+                    OktaDomain = "http://insecure.dev",
                     Token = "foobar",
+                    DisableHttpsCheck = false,
                 });
             });
         }
@@ -53,13 +44,11 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public void ThrowForNullToken()
         {
-            IOktaClient client;
-
             Assert.Throws<ArgumentNullException>(() =>
             {
-                client = new OktaClient(new OktaClientConfiguration
+                var client = new OktaClient(new OktaClientConfiguration
                 {
-                    OrgUrl = "https://dev-12345.oktapreview.com",
+                    OktaDomain = "https://dev-12345.oktapreview.com",
                     Token = string.Empty,
                 });
             });
@@ -68,7 +57,7 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public async Task ThrowForArbitraryRequestUrl()
         {
-            var client = CreateClient();
+            var client = TestClient.Create();
 
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
             {
@@ -80,8 +69,9 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public async Task ThrowApiExceptionForInvalidToken()
         {
-            var client = new OktaClient(new OktaClientConfiguration
+            var client = TestClient.Create(new OktaClientConfiguration
             {
+                OktaDomain = "https://dev-12345.oktapreview.com",
                 Token = "abcd1234",
             });
 
@@ -91,7 +81,7 @@ namespace Okta.Sdk.IntegrationTests
             }
             catch (OktaApiException apiException)
             {
-                apiException.Message.Should().Be("Invalid token provided (400, E0000011)");
+                apiException.Message.Should().StartWith("Invalid token provided");
 
                 apiException.Error.Should().NotBeNull();
                 apiException.Error.ErrorCode.Should().Be("E0000011");

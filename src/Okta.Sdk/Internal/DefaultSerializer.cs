@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
@@ -28,11 +29,12 @@ namespace Okta.Sdk.Internal
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 DefaultValueHandling = DefaultValueHandling.Ignore,
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                ContractResolver = new DefaultContractResolver(),
             };
 
             _serializer.Converters.Add(new RecursiveDictionaryConverter());
             _serializer.Converters.Add(new ResourceSerializingConverter());
+            _serializer.Converters.Add(new StringEnumSerializingConverter());
         }
 
         /// <inheritdoc/>

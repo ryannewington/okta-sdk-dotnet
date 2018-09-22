@@ -58,6 +58,10 @@ namespace Okta.Sdk
         public UserStatus TransitioningToStatus => GetEnumProperty<UserStatus>("transitioningToStatus");
         
         /// <inheritdoc />
+        public Task EndAllSessionsAsync(bool? oauthTokens = false, CancellationToken cancellationToken = default(CancellationToken))
+            => GetClient().Users.EndAllUserSessionsAsync(Id, oauthTokens, cancellationToken);
+        
+        /// <inheritdoc />
         public Task<IUserActivationToken> ActivateAsync(bool? sendEmail = true, CancellationToken cancellationToken = default(CancellationToken))
             => GetClient().Users.ActivateUserAsync(Id, sendEmail, cancellationToken);
         
@@ -90,19 +94,19 @@ namespace Okta.Sdk
             => GetClient().Groups.AddUserToGroupAsync(groupId, Id, cancellationToken);
         
         /// <inheritdoc />
-        public Task<IFactor> AddFactorAsync(Factor factor, bool? updatePhone = false, string templateId = null, CancellationToken cancellationToken = default(CancellationToken))
-            => GetClient().UserFactors.AddFactorAsync(factor, Id, updatePhone, templateId, cancellationToken);
+        public Task<IFactor> AddFactorAsync(Factor factor, bool? updatePhone = false, string templateId = null, int? tokenLifetimeSeconds = 300, bool? activate = false, CancellationToken cancellationToken = default(CancellationToken))
+            => GetClient().UserFactors.AddFactorAsync(factor, Id, updatePhone, templateId, tokenLifetimeSeconds, activate, cancellationToken);
         
         /// <inheritdoc />
-        public IAsyncEnumerable<IFactor> ListSupportedFactors()
+        public ICollectionClient<IFactor> ListSupportedFactors()
             => GetClient().UserFactors.ListSupportedFactors(Id);
         
         /// <inheritdoc />
-        public IAsyncEnumerable<IFactor> ListFactors()
+        public ICollectionClient<IFactor> ListFactors()
             => GetClient().UserFactors.ListFactors(Id);
         
         /// <inheritdoc />
-        public IAsyncEnumerable<ISecurityQuestion> ListSupportedSecurityQuestions()
+        public ICollectionClient<ISecurityQuestion> ListSupportedSecurityQuestions()
             => GetClient().UserFactors.ListSupportedSecurityQuestions(Id);
         
         /// <inheritdoc />

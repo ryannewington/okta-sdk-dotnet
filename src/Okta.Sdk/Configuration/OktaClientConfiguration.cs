@@ -4,6 +4,7 @@
 // </copyright>
 
 using System;
+using System.Diagnostics;
 using Okta.Sdk.Internal;
 
 namespace Okta.Sdk.Configuration
@@ -13,6 +14,8 @@ namespace Okta.Sdk.Configuration
     /// </summary>
     public sealed class OktaClientConfiguration : IDeepCloneable<OktaClientConfiguration>
     {
+        private bool _disableHttpsCheck = false;
+
         /// <summary>
         /// The default HTTP connection timeout in seconds.
         /// </summary>
@@ -33,9 +36,9 @@ namespace Okta.Sdk.Configuration
         /// The Okta Organization URL to use.
         /// </value>
         /// <remarks>
-        /// This URL is typically in the form <c>https://dev-12345.oktapreview.com</c>. If your Org URL includes <c>-admin</c>, remove it.
+        /// This URL is typically in the form <c>https://dev-12345.oktapreview.com</c>. If your Okta domain includes <c>-admin</c>, remove it.
         /// </remarks>
-        public string OrgUrl { get; set; }
+        public string OktaDomain { get; set; }
 
         /// <summary>
         /// Gets or sets the optional proxy to use for HTTP connections. If <c>null</c>, the default system proxy is used, if any.
@@ -55,22 +58,36 @@ namespace Okta.Sdk.Configuration
         public string Token { get; set; }
 
         /// <summary>
-        /// Gets or sets the amount of times the client will retry after experiencing an API rate-limit
+        /// Gets or sets the flag to disable https check.
+        /// This allows for insecure configurations and is NOT recommended for production use.
         /// </summary>
-        /// <value>
-        /// The number of times to retry after experiencing an API rate-limit
-        /// </value>
-        public int MaximumRateLimitRetryAttempts { get; set; } = 8;
+        public bool DisableHttpsCheck
+        {
+            get
+            {
+                return _disableHttpsCheck;
+            }
+
+            set
+            {
+                if (value)
+                {
+                    Trace.TraceWarning("Warning: HTTPS check is disabled. This allows for insecure configurations and is NOT recommended for production use.");
+                }
+
+                _disableHttpsCheck = value;
+            }
+        }
 
         /// <inheritdoc/>
         public OktaClientConfiguration DeepClone()
             => new OktaClientConfiguration
             {
                 ConnectionTimeout = ConnectionTimeout.HasValue ? this.ConnectionTimeout.Value : (int?)null,
-                OrgUrl = this.OrgUrl,
+                OktaDomain = this.OktaDomain,
                 Token = this.Token,
                 Proxy = this.Proxy?.DeepClone(),
-                MaximumRateLimitRetryAttempts = this.MaximumRateLimitRetryAttempts,
+                DisableHttpsCheck = this.DisableHttpsCheck,
             };
     }
 }

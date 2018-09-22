@@ -34,6 +34,30 @@ namespace Okta.Sdk
         IUsersClient Users { get; }
 
         /// <summary>
+        /// Gets a <see cref="IApplicationsClient">ApplicationsClient</see> that interacts with the Okta Applications API.
+        /// </summary>
+        /// <value>
+        /// A <see cref="IApplicationsClient">ApplicationsClient</see> that interacts with the Okta Applications API.
+        /// </value>
+        IApplicationsClient Applications { get; }
+
+        /// <summary>
+        /// Gets a <see cref="ISessionsClient">SessionsClient</see> that interacts with the Okta Sessions API.
+        /// </summary>i
+        /// <value>
+        /// A <see cref="ISessionsClient">SessionsClient</see> that interacts with the Okta Sessions API.
+        /// </value>
+        ISessionsClient Sessions { get; }
+
+        /// <summary>
+        /// Gets a <see cref="ILogsClient">LogsClient</see> that interacts with the Okta Logs API.
+        /// </summary>i
+        /// <value>
+        /// A <see cref="ILogsClient">LogsClient</see> that interacts with the Okta Logs API.
+        /// </value>
+        ILogsClient Logs { get; }
+
+        /// <summary>
         /// Gets a <see cref="IUserFactorsClient">UserFactorsClient</see> that interacts with the Okta Factors API.
         /// </summary>
         /// <value>
@@ -87,8 +111,8 @@ namespace Okta.Sdk
         /// <typeparam name="T">The <see cref="Resource"/> type of the collection.</typeparam>
         /// <param name="href">The collection URL.</param>
         /// <returns>A collection that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<T> GetCollection<T>(string href)
-            where T : Resource, new();
+        CollectionClient<T> GetCollection<T>(string href)
+            where T : IResource;
 
         /// <summary>
         /// Gets a collection of resources from the Okta API by URL.
@@ -96,8 +120,8 @@ namespace Okta.Sdk
         /// <typeparam name="T">The <see cref="Resource"/> type of the collection.</typeparam>
         /// <param name="request">The request options.</param>
         /// <returns>A collection that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<T> GetCollection<T>(HttpRequest request)
-            where T : Resource, new();
+        CollectionClient<T> GetCollection<T>(HttpRequest request)
+            where T : IResource;
 
         /// <summary>
         /// Posts data to an endpoint by URL.

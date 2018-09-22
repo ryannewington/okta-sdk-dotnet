@@ -19,7 +19,7 @@ namespace Okta.Sdk
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>A collection of <see cref="IFactor"/> that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<IFactor> ListFactors(string userId);
+        ICollectionClient<IFactor> ListFactors(string userId);
 
         /// <summary>
         /// Enrolls a user with a supported [factor](#list-factors-to-enroll)
@@ -28,23 +28,25 @@ namespace Okta.Sdk
         /// <param name="userId"></param>
         /// <param name="updatePhone"></param>
         /// <param name="templateId">id of SMS template (only for SMS factor)</param>
+        /// <param name="tokenLifetimeSeconds"></param>
+        /// <param name="activate"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The <see cref="IFactor"/> response.</returns>
-        Task<IFactor> AddFactorAsync(IFactor factor, string userId, bool? updatePhone = false, string templateId = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IFactor> AddFactorAsync(IFactor factor, string userId, bool? updatePhone = false, string templateId = null, int? tokenLifetimeSeconds = 300, bool? activate = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Enumerates all the [supported factors](#supported-factors-for-providers) that can be enrolled for the specified user
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>A collection of <see cref="IFactor"/> that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<IFactor> ListSupportedFactors(string userId);
+        ICollectionClient<IFactor> ListSupportedFactors(string userId);
 
         /// <summary>
         /// Enumerates all available security questions for a user&#x27;s &#x60;question&#x60; factor
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>A collection of <see cref="ISecurityQuestion"/> that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<ISecurityQuestion> ListSupportedSecurityQuestions(string userId);
+        ICollectionClient<ISecurityQuestion> ListSupportedSecurityQuestions(string userId);
 
         /// <summary>
         /// Unenrolls an existing factor for the specified user, allowing the user to enroll a new factor.
@@ -81,9 +83,10 @@ namespace Okta.Sdk
         /// <param name="userId"></param>
         /// <param name="factorId"></param>
         /// <param name="templateId"></param>
+        /// <param name="tokenLifetimeSeconds"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The <see cref="IVerifyFactorResponse"/> response.</returns>
-        Task<IVerifyFactorResponse> VerifyFactorAsync(IVerifyFactorRequest verifyFactorRequest, string userId, string factorId, string templateId = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IVerifyFactorResponse> VerifyFactorAsync(IVerifyFactorRequest verifyFactorRequest, string userId, string factorId, string templateId = null, int? tokenLifetimeSeconds = 300, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

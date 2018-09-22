@@ -19,7 +19,7 @@ namespace Okta.Sdk.Internal
         /// </summary>
         /// <param name="data">The resource data.</param>
         /// <returns>The resource type.</returns>
-        public override Type GetResolvedType(IDictionary<string, object> data)
+        protected override Type GetResolvedTypeInternal(IDictionary<string, object> data)
         {
             var value = data
                 ?.Where(kv => kv.Key.Equals("factorType", StringComparison.OrdinalIgnoreCase))
@@ -68,6 +68,11 @@ namespace Okta.Sdk.Internal
             if (value.Equals("token:software:totp"))
             {
                 return typeof(TotpFactor);
+            }
+            
+            if (value.Equals("u2f"))
+            {
+                return typeof(U2fFactor);
             }
             
             if (value.Equals("web"))

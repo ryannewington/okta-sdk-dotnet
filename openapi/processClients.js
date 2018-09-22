@@ -6,7 +6,8 @@ const {
 } = require('./utils');
 
 const {
-  shouldSkipOperation
+  shouldSkipOperation,
+  applyOperationErrata
 } = require('./errata');
 
 function getTemplatesForClients(operations, infoLogger, errorLogger) {
@@ -34,7 +35,8 @@ function getTemplatesForClients(operations, infoLogger, errorLogger) {
     if (operation.tags.length > 1) {
       infoLogger(`Warning: more than one tag on ${operation.operationId}`);
     }
-
+    
+    operation = applyOperationErrata(operation.tags[0], operation, infoLogger);
     let clientName = operation.tags[0];
     clients[clientName] = clients[clientName] || [];
     clients[clientName].push(operation);
@@ -73,7 +75,7 @@ Creates the context that the handlebars template is bound to:
       isCollection: true,
       returnType = {
         memberName: 'IUser,
-        literal = 'IAsyncEnumerable<IUser>',
+        literal = 'ICollectionClient<IUser>',
         documentationLiteral = 'A collection of <see cref="IUser"/> that can be enumerated asynchronously.'
       },
       methodSignatureLiteral: 'string q = null, string after = null, int? limit = -1',
@@ -136,7 +138,7 @@ function createContextForClient(tag, operations) {
     };
 
     if (operation.isArray) {
-      operationContext.returnType.literal = `IAsyncEnumerable<I${operationContext.returnType.memberName}>`;
+      operationContext.returnType.literal = `ICollectionClient<I${operationContext.returnType.memberName}>`;
       operationContext.returnType.documentationLiteral = `A collection of <see cref="I${operationContext.returnType.memberName}"/> that can be enumerated asynchronously.`;
     } else if (operation.responseModel) {
       operationContext.returnType.literal = `Task<I${operationContext.returnType.memberName}>`;

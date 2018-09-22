@@ -35,9 +35,9 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void InstantiateDerivedResourceWithData()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
             {
-                ["Foo"] = "bar!",
+                ["foo"] = "bar!",
                 ["bar"] = true,
             };
 
@@ -51,7 +51,7 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessStringProperty()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
             {
                 ["foo"] = "abc",
                 ["empty"] = string.Empty,
@@ -82,7 +82,7 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessBooleanProperty()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
             {
                 ["yes"] = true,
                 ["no"] = false,
@@ -113,7 +113,7 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessIntProperty()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
             {
                 ["min"] = int.MinValue,
                 ["max"] = int.MaxValue,
@@ -144,7 +144,7 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessLongProperty()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
             {
                 ["min"] = long.MinValue,
                 ["max"] = long.MaxValue,
@@ -175,7 +175,7 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessDateTimeProperty()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
             {
                 ["dto"] = new DateTimeOffset(2015, 12, 27, 20, 15, 00, TimeSpan.FromHours(-6)),
                 ["iso"] = "2016-11-06T17:05:30.400-08:00",
@@ -206,7 +206,7 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessListProperty()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
             {
                 ["things"] = new List<object>() { "foo", "bar", "baz" },
             };
@@ -221,16 +221,16 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessListOfResources()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
             {
                 ["profiles"] = new List<object>()
                 {
-                    new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                    new Dictionary<string, object>(StringComparer.Ordinal)
                     {
                         ["firstName"] = "John",
                         ["lastName"] = "Foobar",
                     },
-                    new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                    new Dictionary<string, object>(StringComparer.Ordinal)
                     {
                         ["firstName"] = "Jane",
                         ["lastName"] = "Qux",
@@ -255,7 +255,7 @@ namespace Okta.Sdk.UnitTests
             var factory = new ResourceFactory(null, null);
             var resource = factory.CreateNew<Resource>(null);
 
-            resource.GetArrayProperty<string>("foo").Should().BeNull();
+            resource.GetArrayProperty<string>("foo").Should().BeEmpty();
 
             var things = new[] { "favorite", "strings" }.AsEnumerable();
 
@@ -266,7 +266,7 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void AccessEnumProperty()
         {
-            var data = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
             {
                 ["status1"] = "active",
                 ["status2"] = "RECOVERY",
@@ -284,6 +284,67 @@ namespace Okta.Sdk.UnitTests
         }
 
         [Fact]
+        public void AccessListEnumProperty()
+        {
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
+            {
+                ["things"] = new List<object>()
+                {
+                    OAuthResponseType.IdToken,
+                    OAuthResponseType.Token,
+                    OAuthResponseType.Code,
+                },
+            };
+
+            var factory = new ResourceFactory(null, null);
+            var resource = factory.CreateNew<Resource>(data);
+            var things = resource.GetArrayProperty<OAuthResponseType>("things");
+
+            things.Should().NotBeNullOrEmpty();
+            things.Should().HaveCount(3);
+
+            // Test collection item equality a few different ways:
+
+            things.First().Should().Be(OAuthResponseType.IdToken);
+            things.ElementAt(1).Should().Be(OAuthResponseType.Token);
+            things.Last().Should().Be(OAuthResponseType.Code);
+
+            things.Contains(OAuthResponseType.Code).Should().BeTrue();
+
+            things.Should().Contain(OAuthResponseType.IdToken);
+            things.Should().Contain(OAuthResponseType.Token);
+            things.Should().Contain(OAuthResponseType.Code);
+        }
+
+        [Fact]
+        public void ConvertListStringToListEnumProperty()
+        {
+            var data = new Dictionary<string, object>(StringComparer.Ordinal)
+            {
+                ["things"] = new List<object>() { "id_token", "token", "code" },
+            };
+
+            var factory = new ResourceFactory(null, null);
+            var resource = factory.CreateNew<Resource>(data);
+            var things = resource.GetArrayProperty<OAuthResponseType>("things");
+
+            things.Should().NotBeNullOrEmpty();
+            things.Should().HaveCount(3);
+
+            // Test collection item equality a few different ways:
+
+            things.First().Should().Be(OAuthResponseType.IdToken);
+            things.ElementAt(1).Should().Be(OAuthResponseType.Token);
+            things.Last().Should().Be(OAuthResponseType.Code);
+
+            things.Contains(OAuthResponseType.Code).Should().BeTrue();
+
+            things.Should().Contain(OAuthResponseType.IdToken);
+            things.Should().Contain(OAuthResponseType.Token);
+            things.Should().Contain(OAuthResponseType.Code);
+        }
+
+        [Fact]
         public void RoundtripEnumProperty()
         {
             var factory = new ResourceFactory(null, null);
@@ -298,18 +359,18 @@ namespace Okta.Sdk.UnitTests
         [Fact]
         public void TrackInstanceModifications()
         {
-            var resource = new TestResource() // has DictionaryType.ChangeTracking
+            var resource = new TestResource()
             {
                 Foo = "xyz",
             };
 
-            resource.GetModifiedData().Keys.Should().BeEquivalentTo("foo");
+            resource.GetData().Keys.Should().BeEquivalentTo("foo");
 
             resource.Bar = true;
 
-            resource.GetModifiedData().Count.Should().Be(2);
-            resource.GetModifiedData().Should().Contain(new KeyValuePair<string, object>("foo", "xyz"));
-            resource.GetModifiedData().Should().Contain(new KeyValuePair<string, object>("bar", true));
+            resource.GetData().Count.Should().Be(2);
+            resource.GetData().Should().Contain(new KeyValuePair<string, object>("foo", "xyz"));
+            resource.GetData().Should().Contain(new KeyValuePair<string, object>("bar", true));
         }
     }
 }

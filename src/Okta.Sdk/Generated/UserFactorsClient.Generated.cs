@@ -29,8 +29,8 @@ namespace Okta.Sdk
         }
         
         /// <inheritdoc />
-        public IAsyncEnumerable<IFactor> ListFactors(string userId)
-            => GetCollectionClient<Factor>(new HttpRequest
+        public ICollectionClient<IFactor> ListFactors(string userId)
+            => GetCollectionClient<IFactor>(new HttpRequest
             {
                 Uri = "/api/v1/users/{userId}/factors",
                 
@@ -41,7 +41,7 @@ namespace Okta.Sdk
             });
                     
         /// <inheritdoc />
-        public async Task<IFactor> AddFactorAsync(IFactor factor, string userId, bool? updatePhone = false, string templateId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IFactor> AddFactorAsync(IFactor factor, string userId, bool? updatePhone = false, string templateId = null, int? tokenLifetimeSeconds = 300, bool? activate = false, CancellationToken cancellationToken = default(CancellationToken))
             => await PostAsync<Factor>(new HttpRequest
             {
                 Uri = "/api/v1/users/{userId}/factors",
@@ -54,12 +54,14 @@ namespace Okta.Sdk
                 {
                     ["updatePhone"] = updatePhone,
                     ["templateId"] = templateId,
+                    ["tokenLifetimeSeconds"] = tokenLifetimeSeconds,
+                    ["activate"] = activate,
                 },
                 }, cancellationToken).ConfigureAwait(false);
         
         /// <inheritdoc />
-        public IAsyncEnumerable<IFactor> ListSupportedFactors(string userId)
-            => GetCollectionClient<Factor>(new HttpRequest
+        public ICollectionClient<IFactor> ListSupportedFactors(string userId)
+            => GetCollectionClient<IFactor>(new HttpRequest
             {
                 Uri = "/api/v1/users/{userId}/factors/catalog",
                 
@@ -70,8 +72,8 @@ namespace Okta.Sdk
             });
                     
         /// <inheritdoc />
-        public IAsyncEnumerable<ISecurityQuestion> ListSupportedSecurityQuestions(string userId)
-            => GetCollectionClient<SecurityQuestion>(new HttpRequest
+        public ICollectionClient<ISecurityQuestion> ListSupportedSecurityQuestions(string userId)
+            => GetCollectionClient<ISecurityQuestion>(new HttpRequest
             {
                 Uri = "/api/v1/users/{userId}/factors/questions",
                 
@@ -121,7 +123,7 @@ namespace Okta.Sdk
                 }, cancellationToken).ConfigureAwait(false);
         
         /// <inheritdoc />
-        public async Task<IVerifyFactorResponse> VerifyFactorAsync(IVerifyFactorRequest verifyFactorRequest, string userId, string factorId, string templateId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IVerifyFactorResponse> VerifyFactorAsync(IVerifyFactorRequest verifyFactorRequest, string userId, string factorId, string templateId = null, int? tokenLifetimeSeconds = 300, CancellationToken cancellationToken = default(CancellationToken))
             => await PostAsync<VerifyFactorResponse>(new HttpRequest
             {
                 Uri = "/api/v1/users/{userId}/factors/{factorId}/verify",
@@ -134,6 +136,7 @@ namespace Okta.Sdk
                 QueryParameters = new Dictionary<string, object>()
                 {
                     ["templateId"] = templateId,
+                    ["tokenLifetimeSeconds"] = tokenLifetimeSeconds,
                 },
                 }, cancellationToken).ConfigureAwait(false);
         

@@ -25,7 +25,7 @@ namespace Okta.Sdk
         /// <param name="search">Searches for users with a supported filtering  expression for most properties</param>
         /// <param name="expand"></param>
         /// <returns>A collection of <see cref="IUser"/> that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<IUser> ListUsers(string q = null, string after = null, int? limit = -1, string filter = null, string format = null, string search = null, string expand = null);
+        ICollectionClient<IUser> ListUsers(string q = null, string after = null, int? limit = -1, string filter = null, string format = null, string search = null, string expand = null);
 
         /// <summary>
         /// Creates a new user in your Okta organization with or without credentials.
@@ -33,9 +33,10 @@ namespace Okta.Sdk
         /// <param name="user">The <see cref="IUser"/> resource.</param>
         /// <param name="activate">Executes activation lifecycle operation when creating the user</param>
         /// <param name="provider">Indicates whether to create a user with a specified authentication provider</param>
+        /// <param name="nextLogin">With activate&#x3D;true, set nextLogin to &quot;changePassword&quot; to have the password be EXPIRED, so user must change it the next time they log in.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The <see cref="IUser"/> response.</returns>
-        Task<IUser> CreateUserAsync(IUser user, bool? activate = true, bool? provider = false, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IUser> CreateUserAsync(IUser user, bool? activate = true, bool? provider = false, UserNextLogin nextLogin = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Deletes a user permanently.  This operation can only be performed on users that have a &#x60;DEPROVISIONED&#x60; status.  **This action cannot be recovered!**
@@ -68,7 +69,7 @@ namespace Okta.Sdk
         /// <param name="userId"></param>
         /// <param name="showAll"></param>
         /// <returns>A collection of <see cref="IAppLink"/> that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<IAppLink> ListAppLinks(string userId, bool? showAll = false);
+        ICollectionClient<IAppLink> ListAppLinks(string userId, bool? showAll = false);
 
         /// <summary>
         /// Changes a user&#x27;s password by validating the user&#x27;s current password.  This operation can only be performed on users in &#x60;STAGED&#x60;, &#x60;ACTIVE&#x60;, &#x60;PASSWORD_EXPIRED&#x60;, or &#x60;RECOVERY&#x60; status that have a valid [password credential](#password-object)
@@ -95,7 +96,7 @@ namespace Okta.Sdk
         /// <param name="after"></param>
         /// <param name="limit"></param>
         /// <returns>A collection of <see cref="IGroup"/> that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<IGroup> ListUserGroups(string userId, string after = null, int? limit = -1);
+        ICollectionClient<IGroup> ListUserGroups(string userId, string after = null, int? limit = -1);
 
         /// <summary>
         /// Activates a user.  This operation can only be performed on users with a &#x60;STAGED&#x60; status.  Activation of a user is an asynchronous operation.  The user will have the &#x60;transitioningToStatus&#x60; property with a value of &#x60;ACTIVE&#x60; during activation to indicate that the user hasn&#x27;t completed the asynchronous operation.  The user will have a status of &#x60;ACTIVE&#x60; when the activation process is complete.
@@ -171,7 +172,7 @@ namespace Okta.Sdk
         /// <param name="userId"></param>
         /// <param name="expand"></param>
         /// <returns>A collection of <see cref="IRole"/> that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<IRole> ListAssignedRoles(string userId, string expand = null);
+        ICollectionClient<IRole> ListAssignedRoles(string userId, string expand = null);
 
         /// <summary>
         /// Unassigns a role from a user.
@@ -190,7 +191,7 @@ namespace Okta.Sdk
         /// <param name="after"></param>
         /// <param name="limit"></param>
         /// <returns>A collection of <see cref="IGroup"/> that can be enumerated asynchronously.</returns>
-        IAsyncEnumerable<IGroup> ListGroupTargetsForRole(string userId, string roleId, string after = null, int? limit = -1);
+        ICollectionClient<IGroup> ListGroupTargetsForRole(string userId, string roleId, string after = null, int? limit = -1);
 
         /// <summary>
         /// 
@@ -211,6 +212,15 @@ namespace Okta.Sdk
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Task that represents the asynchronous operation.</returns>
         Task AddGroupTargetToRoleAsync(string userId, string roleId, string groupId, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="oauthTokens">Revoke issued OpenID Connect and OAuth refresh and access tokens</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task that represents the asynchronous operation.</returns>
+        Task EndAllUserSessionsAsync(string userId, bool? oauthTokens = false, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

@@ -6,21 +6,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Polly;
 using Xunit;
 
 namespace Okta.Sdk.IntegrationTests
 {
-    [Collection(nameof(ScenariosCollection))]
-    public class UserScenarios : ScenarioGroup
+    [Collection(nameof(UserScenarios))]
+    public class UserScenarios
     {
         [Fact]
         public async Task ListUsers()
         {
-            var client = GetClient("list-users");
+            var client = TestClient.Create();
 
             var profile = new UserProfile
             {
@@ -69,7 +70,7 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public async Task GetUser()
         {
-            var client = GetClient("user-get");
+            var client = TestClient.Create();
 
             // Create a user
             var createdUser = await client.Users.CreateUserAsync(new CreateUserWithPasswordOptions
@@ -112,7 +113,7 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public async Task ActivateUser()
         {
-            var client = GetClient("user-activate");
+            var client = TestClient.Create();
 
             // Create a user
             var createdUser = await client.Users.CreateUserAsync(new CreateUserWithPasswordOptions
@@ -148,7 +149,7 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public async Task UpdateUserProfile()
         {
-            var client = GetClient("user-proflie-update");
+            var client = TestClient.Create();
 
             // Create a user
             var createdUser = await client.Users.CreateUserAsync(new CreateUserWithPasswordOptions
@@ -184,9 +185,58 @@ namespace Okta.Sdk.IntegrationTests
         }
 
         [Fact]
+        public async Task UpdateUserProfileWithDynamicObject()
+        {
+            var client = TestClient.Create();
+
+            // Create a user
+            var createdUser = await client.Users.CreateUserAsync(new CreateUserWithPasswordOptions
+            {
+                Profile = new UserProfile
+                {
+                    FirstName = "John",
+                    LastName = "Dynamic Profile",
+                    Email = "john-dynamic-profile@example.com",
+                    Login = "john-dynamic-profile@example.com",
+                },
+                Password = "Abcd1234",
+                Activate = false,
+            });
+
+            try
+            {
+                var titleObject = new
+                {
+                    prop1 = "prop1",
+                    prop2 = new List<string> { "item1", "item2", "item3" },
+                    prop3 = new { name = "ObjectSample" },
+                    prop4 = 4,
+                };
+
+                createdUser.Profile["title"] = JsonConvert.SerializeObject(titleObject);
+                var updatedUser = await createdUser.UpdateAsync();
+                var retrievedUpdatedUser = await client.Users.GetUserAsync(createdUser.Id);
+
+                var retrievedTitleStr = retrievedUpdatedUser.Profile.GetProperty<string>("title");
+                dynamic retrievedTitle = JsonConvert.DeserializeObject(retrievedTitleStr);
+
+                ((string)retrievedTitle.prop1).Should().Be("prop1");
+                ((JArray)retrievedTitle.prop2).Should().HaveCount(3);
+                ((string)retrievedTitle.prop3.name).Should().Be("ObjectSample");
+                ((int)retrievedTitle.prop4).Should().Be(4);
+            }
+            finally
+            {
+                // Deactivate + delete
+                await createdUser.DeactivateAsync();
+                await createdUser.DeactivateOrDeleteAsync();
+            }
+        }
+
+        [Fact]
         public async Task GetResetPasswordUrl()
         {
-            var client = GetClient("get-reset-password-url");
+            var client = TestClient.Create();
 
             var createdUser = await client.Users.CreateUserAsync(new CreateUserWithPasswordOptions
             {
@@ -217,7 +267,7 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public async Task SuspendUser()
         {
-            var client = GetClient("suspend");
+            var client = TestClient.Create();
 
             // Create a user
             var createdUser = await client.Users.CreateUserAsync(new CreateUserWithPasswordOptions
@@ -255,7 +305,7 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public async Task ChangeUserPassword()
         {
-            var client = GetClient("change-user-password");
+            var client = TestClient.Create();
 
             var createdUser = await client.Users.CreateUserAsync(new CreateUserWithPasswordOptions
             {
@@ -296,7 +346,7 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public async Task ExpireUserPassword()
         {
-            var client = GetClient("expire-password");
+            var client = TestClient.Create();
 
             // Create a user
             var createdUser = await client.Users.CreateUserAsync(new CreateUserWithPasswordOptions
@@ -330,7 +380,7 @@ namespace Okta.Sdk.IntegrationTests
         [Fact]
         public async Task ChangeUserRecoveryQuestion()
         {
-            var client = GetClient("change-recover-question");
+            var client = TestClient.Create();
 
             // Create a user
             var createdUser = await client.Users.CreateUserAsync(new CreateUserWithPasswordOptions
@@ -364,14 +414,57 @@ namespace Okta.Sdk.IntegrationTests
             }
         }
 
+        [Fact]
+        public async Task CreateUserWithProvider()
+        {
+            var client = TestClient.Create();
+
+            // Create a user
+            var createdUser = await client.Users.CreateUserAsync(new CreateUserWithProviderOptions
+            {
+                Profile = new UserProfile
+                {
+                    FirstName = "Joanna",
+                    LastName = "CreatedWithProvider",
+                    Email = "joanna-create-with-provider@example.com",
+                    Login = "joanna-create-with-provider@example.com",
+                },
+                ProviderType = AuthenticationProviderType.Federation,
+                ProviderName = "FEDERATION",
+            });
+
+            try
+            {
+                // Retrieve by ID
+                var retrievedById = await client.Users.GetUserAsync(createdUser.Id);
+                retrievedById.Profile.LastName.Should().Be("CreatedWithProvider");
+                retrievedById.Credentials.Provider.Type.Should().Be(AuthenticationProviderType.Federation);
+                retrievedById.Credentials.Provider.Name.Should().Be("FEDERATION");
+            }
+            finally
+            {
+                // Remove the user
+                await createdUser.DeactivateAsync();
+                await createdUser.DeactivateOrDeleteAsync();
+            }
+
+            // Getting by ID should result in 404 error
+            await Assert.ThrowsAsync<OktaApiException>(
+                () => client.Users.GetUserAsync(createdUser.Id));
+        }
+
         [Fact(Skip = "TODO")]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task AssignUserRole()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             throw new NotImplementedException();
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact(Skip = "https://github.com/okta/okta-sdk-dotnet/issues/88")]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task UserGroupTargetRole()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             throw new NotImplementedException();
         }

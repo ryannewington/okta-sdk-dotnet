@@ -37,6 +37,8 @@ namespace Okta.Sdk
 
         UserStatus TransitioningToStatus { get; }
 
+        Task EndAllSessionsAsync(bool? oauthTokens = false, CancellationToken cancellationToken = default(CancellationToken));
+
         Task<IUserActivationToken> ActivateAsync(bool? sendEmail = true, CancellationToken cancellationToken = default(CancellationToken));
 
         Task DeactivateAsync(CancellationToken cancellationToken = default(CancellationToken));
@@ -53,13 +55,13 @@ namespace Okta.Sdk
 
         Task AddToGroupAsync(string groupId, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<IFactor> AddFactorAsync(Factor factor, bool? updatePhone = false, string templateId = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IFactor> AddFactorAsync(Factor factor, bool? updatePhone = false, string templateId = null, int? tokenLifetimeSeconds = 300, bool? activate = false, CancellationToken cancellationToken = default(CancellationToken));
 
-        IAsyncEnumerable<IFactor> ListSupportedFactors();
+        ICollectionClient<IFactor> ListSupportedFactors();
 
-        IAsyncEnumerable<IFactor> ListFactors();
+        ICollectionClient<IFactor> ListFactors();
 
-        IAsyncEnumerable<ISecurityQuestion> ListSupportedSecurityQuestions();
+        ICollectionClient<ISecurityQuestion> ListSupportedSecurityQuestions();
 
         Task<IFactor> GetFactorAsync(string factorId, CancellationToken cancellationToken = default(CancellationToken));
 
