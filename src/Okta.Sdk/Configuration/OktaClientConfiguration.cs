@@ -41,6 +41,14 @@ namespace Okta.Sdk.Configuration
         public string OktaDomain { get; set; }
 
         /// <summary>
+        /// Gets or sets the amount of times the client will retry after experiencing an API rate-limit
+        /// </summary>
+        /// <value>
+        /// The number of times to retry after experiencing an API rate-limit
+        /// </value>
+        public int MaximumRateLimitRetryAttempts { get; set; } = 8;
+
+        /// <summary>
         /// Gets or sets the optional proxy to use for HTTP connections. If <c>null</c>, the default system proxy is used, if any.
         /// </summary>
         /// <value>
@@ -88,6 +96,7 @@ namespace Okta.Sdk.Configuration
                 Token = this.Token,
                 Proxy = this.Proxy?.DeepClone(),
                 DisableHttpsCheck = this.DisableHttpsCheck,
+                MaximumRateLimitRetryAttempts = this.MaximumRateLimitRetryAttempts,
             };
     }
 }
