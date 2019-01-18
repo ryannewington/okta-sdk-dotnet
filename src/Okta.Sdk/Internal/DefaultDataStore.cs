@@ -40,7 +40,7 @@ namespace Okta.Sdk.Internal
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             _resourceFactory = resourceFactory ?? throw new ArgumentNullException(nameof(resourceFactory));
             _logger = logger;
-            _userAgentBuilder = new UserAgentBuilder();
+            _userAgentBuilder = new UserAgentBuilder(_logger);
         }
 
         /// <inheritdoc/>
@@ -175,6 +175,7 @@ namespace Okta.Sdk.Internal
             PrepareRequest(request, requestContext);
 
             var response = await _requestExecutor.GetAsync(request.Uri, request.Headers, cancellationToken).ConfigureAwait(false);
+
             EnsureResponseSuccess(response);
 
             var data = _serializer.Deserialize(PayloadOrEmpty(response));
