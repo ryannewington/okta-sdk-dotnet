@@ -26,6 +26,7 @@ This repository contains the Okta management SDK for .NET. This SDK can be used 
 We also publish these other libraries for .NET:
  
 * [Okta ASP.NET middleware](https://github.com/okta/okta-aspnet)
+* [Okta .NET Authentication SDK](https://github.com/okta/okta-auth-dotnet)
  
 You can learn more on the [Okta + .NET][lang-landing] page in our documentation.
 
@@ -37,8 +38,8 @@ This library uses semantic versioning and follows Okta's [library version policy
 
 | Version | Status                    |
 | ------- | ------------------------- |
-| 0.x   | :heavy_check_mark: Stable |
-| 1.x | :heavy_check_mark: Stable ([migration guide](MIGRATING.md)) |
+| 0.3.3   | :warning: Retiring on 2019-12-11 ([migration guide](MIGRATING.md))  |
+| 1.x | :heavy_check_mark: Stable |
  
 The latest release can always be found on the [releases page][github-releases].
 
@@ -61,9 +62,7 @@ The SDK is compatible with [.NET Standard](https://docs.microsoft.com/en-us/dotn
 ### Install using The Package Manager Console
 Simply run `install-package Okta.Sdk`. Done!
 
-To install 1.x version through NuGet, you will need to enable the "Include Prereleases" option when you search for the `Okta.Sdk` package.
-
-The [`legacy` branch](https://github.com/okta/okta-sdk-dotnet/tree/legacy) is published on NuGet as [Okta.Core.Client 0.3.3](https://www.nuget.org/packages/Okta.Core.Client/0.3.3).
+The [`legacy` branch](https://github.com/okta/okta-sdk-dotnet/tree/legacy) is published on NuGet as [Okta.Core.Client 0.3.3](https://www.nuget.org/packages/Okta.Core.Client/0.3.3).  This version is retiring and will not be supported past December 11, 2019.  It will likely remain working after that date but you should make a plan to migrate to the new 1.x version.
 
 You'll also need:
 
@@ -326,7 +325,7 @@ The SDK client object can be used to make calls to any Okta API (not just the en
 For example, to activate a user using the `PostAsync` method (instead of `user.ActivateAsync`):
 
 ```csharp
-await client.PostAsync(new Okta.Sdk.Internal.HttpRequest
+await client.PostAsync(new Okta.Sdk.HttpRequest
 {
     Uri = $"/api/v1/users/{userId}/lifecycle/activate",
     PathParameters = new Dictionary<string, object>()
@@ -413,6 +412,6 @@ We're happy to accept contributions and PRs! Please see the [contribution guide]
 [devforum]: https://devforum.okta.com/
 [dotnetdocs]: https://developer.okta.com/okta-sdk-dotnet/latest/
 [lang-landing]: https://developer.okta.com/code/dotnet/
-[github-issues]: https://developer.okta.com/okta-sdk-dotnet/issues
-[github-releases]: https://developer.okta.com/okta-sdk-dotnet/releases
+[github-issues]: https://github.com/okta/okta-sdk-dotnet/issues
+[github-releases]: https://github.com/okta/okta-sdk-dotnet/releases
 [Rate Limiting at Okta]: https://developer.okta.com/docs/api/getting_started/rate-limits
